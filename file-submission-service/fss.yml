@@ -1,0 +1,67 @@
+openapi: 3.0.0
+info:
+  version: '1.0'
+  title: File Submission Service REST Endpoints
+  description: >-
+    The File Submission Service (FSS) is an HTTP service that allows files to be added to the Engineering Database.
+      
+    Visit [TMT Website](http://www.tmt.org) for more information.
+
+    Complete codebase is available on [Github](https://github.com/tmtsoftware/dms).
+
+    Collection of routes listed on this page are http end points exposed by TMT common software.
+  x-logo:
+    url: tmt.png
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+paths:
+  '/eng/files':
+    put:
+      description: Add an ancillary file to engineering storage
+      summary: Add engineering ancillary file
+      tags:
+      - File Submission Service
+      operationId: add eng file
+      parameters:
+      - name: channelName
+        in: query
+        required: true
+        schema:
+          type: string
+      - name: date
+        in: query
+        required: true
+        schema:
+          type: string
+      - name: time
+        in: query
+        required: true
+        schema:
+          type: string
+      - name: subsystem
+        in: query
+        required: true
+        schema:
+           $ref: '../shared.yml#/components/schemas/Subsystem'
+      - name: tags
+        in: query
+        schema:
+          type: array
+          items:
+            $ref: '../shared.yml#/components/schemas/Tag'
+      requestBody: 
+        description: file to be uploaded
+        required: true
+        content:
+          application/octet-stream:
+            schema: {}
+      responses: 
+        '200':
+          description: URI of file if successfully added
+          content:
+            application/json:
+              schema: 
+                type: string
+        '404':
+          description: Not Found                

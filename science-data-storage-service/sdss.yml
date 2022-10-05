@@ -1,0 +1,46 @@
+openapi: 3.0.0
+info:
+  version: '1.0'
+  title: Science Data Storafe Service  REST Endpoints
+  description: >-
+    The Science Data Storage Service (SDSS) is an HTTP service that allows science data to be added to the Science Data Storage System.
+
+    Visit [TMT Website](http://www.tmt.org) for more information.
+
+    Complete codebase is available on [Github](https://github.com/tmtsoftware/dms).
+
+    Collection of routes listed on this page are http end points exposed by TMT common software.
+  x-logo:
+    url: tmt.png
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+paths:
+  '/science/files':
+    put:
+      description: Add science file to the science archive
+      summary: Add science file
+      tags:
+      - Science Data Storage Service
+      operationId: add science file
+      parameters:
+      - name: exposureId
+        in: query
+        required: true
+        schema:
+          $ref: '../shared.yml#/components/schemas/ExposureId'
+      requestBody: 
+        description: file to be uploaded
+        required: true
+        content:
+          application/octet-stream:
+            schema: {}
+      responses: 
+        '200':
+          description: URI of file if successfully added
+          content:
+            application/json:
+              schema: 
+                type: string
+        '404':
+          description: Not Found

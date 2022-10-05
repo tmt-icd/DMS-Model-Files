@@ -1,0 +1,83 @@
+openapi: 3.0.0
+info:
+  version: '1.0'
+  title: Metadata Access Service REST Endpoints
+  description: >-
+    The Metadata Access Service (MAS) is an HTTP service that allows clients (applications and users) to fetch metadata for an ExposureId in a variety of formats such as FITS header and JSON. It also supports a request for specific header information using one or more FITS keywords.
+          
+    Visit [TMT Website](http://www.tmt.org) for more information.
+
+    Complete codebase is available on [Github](https://github.com/tmtsoftware/dms).
+
+    Collection of routes listed on this page are http end points exposed by TMT common software.
+  x-logo:
+    url: tmt.png
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+paths:
+
+  '/metadata/header':
+    get:
+      description: Get a full or partial FITS header for a specific exposure. 
+      summary: Get FITS header
+      tags: 
+      - Metadata Access Service
+      operationId: retrieve header
+      parameters:
+      - name: exposureId
+        in: query
+        description: Exposure ID of exposure 
+        required: true
+        schema: 
+          $ref: '../shared.yml#/components/schemas/ExposureId'
+      - name: keywords
+        in: query
+        description: Optional set of keyword names to retrieve.  If this is not specified, the entire header is returned.
+        schema:
+          type: array
+          items: 
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '../shared.yml#/components/schemas/Header'
+        '404':
+          description: Not Found
+  '/metadata/raw':
+    get:
+      description: Get raw metadata as a list of Events for a specific Observe Event for a specific exposure.  A single Event can optionally be retrieved by passing in the Event path.
+      summary: Get raw metadata
+      tags: 
+      - Metadata Access Service
+      operationId: retrieve raw metadata
+      parameters:
+      - name: exposureId
+        in: query
+        description: Exposure ID of exposure 
+        required: true
+        schema: 
+          $ref: '../shared.yml#/components/schemas/ExposureId'
+      - name: observeEvent
+        in: query
+        description: ObserveEvent name 
+        required: true
+        schema: 
+          $ref: '../shared.yml#/components/schemas/ObserveEvent'
+      - name: event
+        in: query
+        description: Event including prefix.  If this is used, only the data for the specificed Event is returned.
+        schema: 
+          $ref: '../shared.yml#/components/schemas/EventKey'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '../shared.yml#/components/schemas/EngData'
+        '404':
+          description: Not Found
