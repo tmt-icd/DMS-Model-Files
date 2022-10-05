@@ -37,12 +37,12 @@ paths:
         in: query
         description: Type of compression, if desired
         schema:
-          $ref: '#/components/schemas/CompressionType'
+          $ref: '../shared.yml#/components/schemas/CompressionType'
       - name: package
         in: query
         description: Type of packaging, if multiple files are downloaded
         schema:
-          $ref: '#/components/schemas/PackageType'
+          $ref: '../shared.yml#/components/schemas/PackageType'
       responses:
         '200':
           description: OK
@@ -64,7 +64,7 @@ paths:
         description: Exposure ID of exposure 
         required: true
         schema: 
-          $ref: '#/components/schemas/ExposureId'
+          $ref: '../shared.yml#/components/schemas/ExposureId'
       responses:
         '200':
           description: URI of file if successfully found
@@ -83,28 +83,28 @@ paths:
       - Science Data Access Service
       operationId: locate files
       parameters:
-        - $ref: '#/components/parameters/fileType'
-        - $ref: '#/components/parameters/originalFilename'
-        - $ref: '#/components/parameters/programId'
-        - $ref: '#/components/parameters/obsId'
-        - $ref: '#/components/parameters/observer'
-        - $ref: '#/components/parameters/objectName'
-        - $ref: '#/components/parameters/ra'
-        - $ref: '#/components/parameters/dec'
-        - $ref: '#/components/parameters/radius'
-        - $ref: '#/components/parameters/startDate'
-        - $ref: '#/components/parameters/startTime'
-        - $ref: '#/components/parameters/endDate'
-        - $ref: '#/components/parameters/endTime'
-        - $ref: '#/components/parameters/instrument'
-        - $ref: '#/components/parameters/channel'
-        - $ref: '#/components/parameters/integrationTime'
-        - $ref: '#/components/parameters/coadds'
-        - $ref: '#/components/parameters/filter'
-        - $ref: '#/components/parameters/scale'
-        - $ref: '#/components/parameters/spectralResolution'
-        - $ref: '#/components/parameters/aoMode'
-        - $ref: '#/components/parameters/outputFormat'
+        - $ref: '../shared.yml#/components/parameters/fileType'
+        - $ref: '../shared.yml#/components/parameters/originalFilename'
+        - $ref: '../shared.yml#/components/parameters/programId'
+        - $ref: '../shared.yml#/components/parameters/obsId'
+        - $ref: '../shared.yml#/components/parameters/observer'
+        - $ref: '../shared.yml#/components/parameters/objectName'
+        - $ref: '../shared.yml#/components/parameters/ra'
+        - $ref: '../shared.yml#/components/parameters/dec'
+        - $ref: '../shared.yml#/components/parameters/radius'
+        - $ref: '../shared.yml#/components/parameters/startDate'
+        - $ref: '../shared.yml#/components/parameters/startTime'
+        - $ref: '../shared.yml#/components/parameters/endDate'
+        - $ref: '../shared.yml#/components/parameters/endTime'
+        - $ref: '../shared.yml#/components/parameters/instrument'
+        - $ref: '../shared.yml#/components/parameters/channel'
+        - $ref: '../shared.yml#/components/parameters/integrationTime'
+        - $ref: '../shared.yml#/components/parameters/coadds'
+        - $ref: '../shared.yml#/components/parameters/filter'
+        - $ref: '../shared.yml#/components/parameters/scale'
+        - $ref: '../shared.yml#/components/parameters/spectralResolution'
+        - $ref: '../shared.yml#/components/parameters/aoMode'
+        - $ref: '../shared.yml#/components/parameters/outputFormat'
         
       responses: 
         '200':
@@ -114,14 +114,14 @@ paths:
               schema: 
                 type: array
                 items:
-                  $ref: '#/components/schemas/ScienceSearchResultItem'
+                  $ref: '../shared.yml#/components/schemas/ScienceSearchResultItem'
             text/csv:
               schema:
                 type: string
                 example: "uri1, name1, exposureID1, data1, time1, ra1, dec1, instrument1, channel1, itime,1 coadds1, filter1, scale1, res1, aoMode1\nuri2, name2, exposureID2, data2, time2, ra2, dec2, instrument2, channel2, itime2, coadds2, filter2, scale2, res2, aoMode2"
             text/xml:
               schema:
-                $ref: '#/components/schemas/VOTABLE'
+                $ref: '../shared.yml#/components/schemas/VOTABLE'
                 
             text/html:
               schema:
