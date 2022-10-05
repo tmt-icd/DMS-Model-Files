@@ -5,7 +5,7 @@ info:
   description: >-
     The Calibration Data Service (CDS) is an HTTP service that indentifies and returns the location of calibration files suitable for reduction.
 
-Visit [TMT Website](http://www.tmt.org) for more information.
+    Visit [TMT Website](http://www.tmt.org) for more information.
 
     Complete codebase is available on [Github](https://github.com/tmtsoftware/dms).
 
