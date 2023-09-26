@@ -1,7 +1,7 @@
 openapi: 3.0.0
 info:
   version: '1.0'
-  title: Science Data Storafe Service  REST Endpoints
+  title: Science Data Storage Service REST Endpoints
   description: >-
     The Science Data Storage Service (SDSS) is an HTTP service that allows science data to be added to the Science Data Storage System.
 
