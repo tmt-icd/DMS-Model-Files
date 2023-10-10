@@ -1,0 +1,42 @@
+openapi: 3.0.0
+info:
+  version: '1.0'
+  title: TMT Data Managment System REST Endpoints
+  description: >-
+    The Detector Data Collection Service (DDCS) watches for new exposures written by data producers and moves them to the permanent store.
+
+    Visit [TMT Website](http://www.tmt.org) for more information.
+
+    Complete codebase is available on [Github](https://github.com/tmtsoftware/dms).
+
+    Collection of routes listed on this page are http end points exposed by TMT common software.
+  x-logo:
+    url: tmt.png
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+
+paths:
+  '/transfer/{subsystem}': 
+    get: 
+      description: Obtain a URI for a instrument transfer area on the Summit Storage
+      summary: Get transfer area URI
+      tags:
+      - Detector Data Collection Service
+      operationId: get transfer URI
+      parameters:
+        - name: subsystem
+          in: path
+          required: true
+          description: specify subsystem that will be using transfer area
+          schema:
+            $ref: '../shared.yml#/components/schemas/Subsystem'
+      responses: 
+        '200':
+          description: URI of transfer area
+          content:
+            application/json:
+              schema: 
+                type: string
+        '404':
+          description: Not Found
