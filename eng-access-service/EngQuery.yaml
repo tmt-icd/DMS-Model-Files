@@ -1,0 +1,293 @@
+openapi: 3.0.3
+info:
+  version: '0.9'
+  title: Engineering Database Query Service API
+  description: >-
+    The Engineering Query Service API is HTTP endpoints for discovering, querying, and exporting events, 
+    and logs in the Engineering Database. An endpoint for gathering all subsystem engineering information
+    is included. This endpoint accesses the file access API.
+    <p>
+    File access and submittal is handled by the Engineering File and Access APIs covered elsewhere.
+    <p>
+    The complete DMS codebase is available on [Github](https://github.com/tmtsoftware/dms).
+    <p>
+    The collection of routes listed on this page are HTTP endpoints exposed by TMT Common Software.
+  license:
+    name: Apache 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0.html
+servers:
+  - url: 'https://future_eng_query_server/V1'
+externalDocs:
+  description: "References for the required time format"
+  url: https://datatracker.ietf.org/doc/html/rfc3339
+
+paths:
+  '/eng/sqlQuery':
+    post:
+      description: This endpoint supports sending an SQL query to the event Engineering Database using SQL.
+          In this query, a time range may be included within the SQL query as required by the database system.
+      summary: Query the Engineering Database using an SQL-based query
+      operationId: addEngFile
+      requestBody:
+        description: Execute the SQL query provided in the request body.
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                statement:
+                  type: string
+                  description: "The SQL statement to execute. The query must be well-formed and obey the rules of the database."
+                  example: "SELECT alt, az FROM demands WHERE time >= '2023-10-29T08:00:00Z' AND time <= '2023-10-29T12:00:00Z'"
+                timeout:
+                  type: integer
+                  description: "An optional timeout for the query in seconds. The default is 10 seconds."
+                  example: 15
+                database:
+                  type: string
+                  description: "An optional database that will be used when executing the SQL query."
+                bindings:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/binding'
+              required:
+                - statement
+            example:
+              statement: "SELECT  FROM demands WHERE time >= '2023-10-29T08:00:00Z' AND time <= '2023-10-29T12:00:00Z'"
+              statement2: "SELECT ? FROM ? WHERE time >= '2023-10-29T08:00:00Z' AND time <= '2023-10-29T12:00:00Z'"
+              timeout: 15
+              database: EVENTS
+              bindings: [field:1 value:alt, field:2 value:DEMANDS]
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '../shared.yml#/components/schemas/EngData'
+        '400':
+          description:
+            "Bad Request. Arguments provided were not correct or were incomplete: with explanatory text."
+        '404':
+          description: The requested service is not available.
+  '/eng/events':
+    get:
+      description: Returns values for a set of event parameters over a specified time range using built-in simplified
+        queries.
+      summary: Retrieve Event Data Within a Time Range
+      operationId: retrieve data
+      parameters:
+        - name: startTime
+          in: query
+          required: true
+          description: All queries include a time range. startTime is the oldest time in RFC 3339 format.
+          example: 2025-04-12T23:20:50.52Z
+          schema:
+            type: string
+            format: date-time
+        - name: endTime
+          in: query
+          required: true
+          description: All queries include a time range. endTime is the most recent time in RFC 3339 format.
+          example: 2025-04-12T23:20:48.00Z
+          schema:
+            type: string
+            format: date-time
+        - name: binSize
+          in: query
+          description: The number of time units in a bin.
+          schema:
+            type: integer
+            minimum: 1
+        - name: binUnits
+          in: query
+          schema:
+            type: string
+            description: The time units of the binSize
+            enum:
+              - microseconds
+              - milliseconds
+              - seconds
+              - minutes
+              - hours
+              - days
+              - weeks
+              - months
+              - years
+            default: seconds
+        - name: fillMethod
+          in: query
+          schema:
+            type: string
+            enum: [interp, last]
+            description: |
+              An optional parameter that can be used to indicate how to fill in missing values in query results when no data value
+              exists within a bin.
+              
+              Methods if *binSize* is specified.
+              * `interp` - missing values filled in with interpolated values between data points when available
+              * `last` - missing values replaced value with most recent value
+
+        - name: aggregate
+          in: query
+          schema:
+            type: string
+            enum: [max, min, mean, median, first, last, count]
+          description: |
+            An optional parameter that must be present when binning data with *binSize* and *binUnits*.
+            Aggregation methods.
+    
+            * max - the largest value in the bin
+            * min - the smallest value in the bin
+            * mean - the mean of the values in the bin
+            * median - the median of the values in the bin
+            * first - the first value or oldest value in the bin
+            * last - the last or newest value in the bin
+            * count - the number of values in the bin
+
+        - name: subsystem
+          in: query
+          description: specify subsystem to retrieve all events for a subsystem
+          schema:
+            $ref: '../shared.yml#/components/schemas/Subsystem'
+        - name: events
+          in: query
+          description: list of event parameters that should be used in the query
+          schema:
+            type: array
+            items:
+              $ref: '../shared.yml#/components/schemas/EventKey'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '../shared.yml#/components/schemas/EngData'
+        '400':
+          description:
+            "Bad Request. Arguments provided were not correct or were incomplete: with explanatory text."
+        '404':
+          description: Not Found
+  '/eng/logs':
+    get:
+      description: Returns all log messages over a specified time range, subsystem(s), and component(s).
+      summary: Retrieve Log Messages Within a Time Range
+      operationId: retrieve logs
+      parameters:
+        - name: startTime
+          in: query
+          required: true
+          description: All queries include a time range. startTime is the oldest time in RFC 3339 format.
+          example: 2025-04-12T23:20:50.52Z
+          schema:
+            type: string
+            format: date-time
+        - name: endTime
+          in: query
+          required: true
+          description: All queries include a time range. endTime is the most recent time in RFC 3339 format.
+          example: 2025-04-12T23:20:48.00Z
+          schema:
+            type: string
+            format: date-time
+        - name: subsystem
+          in: query
+          required: true
+          description: At least one subsystem must be provided
+          example: TCS,APS
+          schema:
+            type: array
+            items:
+              $ref: '../shared.yml#/components/schemas/Subsystem'
+        - name: component
+          description: An optional array of component names. If no names are provided, longs for all components of the
+            subsystem are returned
+          in: query
+          example:
+          schema:
+            type: array
+            items:
+              type: string
+              example: filter,grating,blue
+        - name: export
+          in: query
+          description: An optinoal parameter that when present and set to true, indicates the results should be returned as a file.
+          schema:
+            type: boolean
+            default: false
+        - name: pretty
+          in: query
+          description: An optional parameter that indicates the result logs should be pretty printed with one log item per line
+          schema:
+            type: boolean
+            default: false
+      responses:
+        '200':
+          description: OK, query successful. 
+            Payload is log entries for the provided subsystem and components ordered by time.
+          content:
+            application/json:
+              schema:
+                $ref: '../shared.yml#/components/schemas/LogData'
+            text/plain:
+              schema:
+                $ref: '../shared.yml#/components/schemas/SimpleLogData'
+        '400':
+          description:
+            "Bad Request. Arguments provided were not correct or were incomplete: with explanatory text."
+        '404':
+          description:
+
+  '/eng/all/{subsystem}':
+    get:
+      description: >-
+        Retrieve all engineering events for a single subsystem over a specified time range
+      summary: Retrieve All Engineering Events For a Subsystem Within a Time Range
+      operationId: retrieveAll
+      parameters:
+        - name: startTime
+          in: query
+          required: true
+          description: All queries include a time range. startTime is the oldest time in RFC 3339 format.
+          example: 2025-04-12T23:20:50.52Z
+          schema:
+            type: string
+            format: date-time
+        - name: endTime
+          in: query
+          required: true
+          description: All queries include a time range. endTime is the most recent time in RFC 3339 format.
+          example: 2025-04-12T23:20:48.00Z
+          schema:
+            type: string
+            format: date-time
+        - name: subsystem
+          in: path
+          required: true
+          description: specify subsystem to retrieve all events for a subsystem
+          schema:
+            $ref: '../shared.yml#/components/schemas/Subsystem'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '../shared.yml#/components/schemas/AnyData'
+        '404':
+          description: Not Found
+components:
+  schemas:
+    binding:
+      type: object
+      required:
+        - field
+        - value
+      properties:
+        field:
+          type: integer
+        value:
+          type: string
+      example: [field:1 value:alt, field:2 value:DEMANDS]

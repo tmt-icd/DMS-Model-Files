@@ -1,0 +1,203 @@
+openapi: 3.0.0
+info:
+  version: '0.9'
+  title: Engineering Database File Access Service API
+  description: >-
+    The Engineering File Access API is HTTP endpoints for discovering ancillary files in the Engineering
+    Database and for retrieving files from the Engineering Database.
+    <p>
+    The complete DMS codebase is available on [Github](https://github.com/tmtsoftware/dms).
+    <p>
+    The collection of routes listed on this page are HTTP endpoints exposed by TMT Common Software.
+  license:
+    name: Apache 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0.html
+servers:
+  - url: 'https://future_eng_file_server/V1'
+externalDocs:
+  description: "References for time format"
+  url: https://datatracker.ietf.org/doc/html/rfc3339
+paths:
+  '/eng/files/search':
+    get:
+      description: >-
+        Returns a list of URIs for engineering ancillary files that match query parameters
+      summary: Discover ancillary files in the Engineering Database
+      operationId: searchFiles
+      tags:
+        - Discovery Endpoints
+      parameters:
+        - name: startTime
+          in: query
+          required: true
+          description: All queries include a time range. startTime is the oldest time in RFC 3339 format.
+          example: 2025-04-12T23:20:50.52Z
+          schema:
+            type: string
+            format: date-time
+        - name: endTime
+          in: query
+          required: true
+          description: All queries include a time range. endTime is the most recent time in RFC 3339 format.
+          example: 2025-04-12T23:20:48.00Z
+          schema:
+            type: string
+            format: date-time
+        - name: subsystem
+          in: query
+          required: true
+          description: Specify a subsystem to use to create a unique topic key with the channelName. 
+                 An example topic is APS.apsChannel
+          example: APS
+          schema:
+            $ref: '../shared.yml#/components/schemas/Subsystem'
+        - name: channelName
+          in: query
+          required: true
+          example: apsChannel
+          description: Specify a channelName to use to create a unique topic key with the provided subsystem.
+            An example topic is APS.apsChannel
+          schema:
+            type: string
+        - name: tags
+          in: query
+          schema:
+            type: array
+            description: Tags can be provided to further filter results of the time-based query.
+              Note that tags and their values must be provided when submitting a file and tags must
+              be defined in the subsystem data specification document.
+            items:
+              $ref: '../shared.yml#/components/schemas/Tag'
+            example: [(location, top-end)]
+      responses:
+        '200':
+          description: The response for a successful discovery query is a FileItem objec
+          content:
+            application/json:
+              schema:
+                $ref: '../shared.yml#/components/schemas/FileData'
+        '400':
+          description:
+            "Bad Request. Arguments provided were not correct or were incomplete: with explanatory text."
+        '404':
+          description: File not found
+  /eng/file/{fileId}:
+    get:
+      description: Retrieve a single ancillary file.
+      summary: Retrieve a single engineering ancillary file from the Engineering Database
+      operationId: retrieveEngAncillaryFile
+      tags:
+        - Retrieval Endpoints
+      parameters:
+        - name: fileId
+          in: path
+          description: FileId of a previously stored ancillary files for retrieval
+          required: true
+          example: a1c6a2ab-4b01-4253-b4c9-70e04b3b48fc
+          schema:
+            type: string
+      responses:
+        '200':
+          description: File located and returned successfully
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
+        '400':
+          description:
+            "Bad Request. Arguments provided were not correct or were incomplete: with explanatory text."
+        '404':
+          description: Not Found
+  '/eng/files':
+    get:
+      description:
+        Get one or more ancillary files based on one or more fileIds.
+        Files will be returned in a compressed collection in the format specified by the optional package parameter.
+        The default package value is zip.
+        <p>
+        If any of the fileIds cannot be associated with a file, the entire request is rejected.
+      summary: Retrieve one or more engineering ancillary files from the Engineering Database
+      operationId: retrieveEngAncillaryFiles
+      tags:
+        - Retrieval Endpoints
+      parameters:
+      - name: fileIds
+        in: query
+        description: One or more fileIds of previously stored ancillary files for retrieval.
+        required: true
+        style: form
+        explode: false
+        example: a1c6a2ab-4b01-4253-b4c9-70e04b3b48fc, a1c6a2ab-4b01-4253-b4c9-70e04b3b53af
+        schema:
+          type: array
+          minItems: 1
+          items:
+            type: string
+      - name: package
+        in: query
+        description: The type of packaging used when returning the collection of requested files.
+        schema:
+          $ref: '../shared.yml#/components/schemas/PackageType'
+      responses:
+        '200':
+          description: All files located and returned successfully in a compressed file.
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
+        '400':
+          description:
+              "Bad Request. Arguments provided were not correct or were incomplete: with explanatory text."
+        '404':
+          description: One or more of the files were not found.
+
+  '/eng/all/{subsystem}':
+    get:
+      description: >-
+        Retrieve all engineering files for a subsystem over a specified time range.
+        <p>
+        Files will be returned in a compressed collection in the format specified by the optional package parameter.
+        The default package value is zip.
+      summary: Retrieve all engineering files for a subsystem over a specified time range
+      operationId: retrieveSubsystemAll
+      parameters:
+        - name: subsystem
+          in: path
+          required: true
+          description: Specify a subsystem to use to create a unique topic key with the channelName.
+              An example topic is APS.apsChannel
+          example: APS
+          schema:
+            type: string
+        - name: startTime
+          in: query
+          required: true
+          description: All queries include a time range. startTime is the oldest time in RFC 3339 format.
+          example: 2025-04-12T23:20:48.00Z
+          schema:
+            type: string
+            format: date-time
+        - name: endTime
+          in: query
+          required: true
+          description: All queries include a time range. endTime is the most recent time in RFC 3339 format.
+          example: 2025-04-12T23:20:50.52Z
+          schema:
+            type: string
+            format: date-time
+        - name: package
+          in: query
+          description: The type of packaging used when returning the collection of requested files.
+          schema:
+            $ref: '../shared.yml#/components/schemas/PackageType'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '../shared.yml#/components/schemas/AnyData'
+        '404':
+          description: Not Found

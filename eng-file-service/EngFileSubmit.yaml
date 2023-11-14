@@ -1,0 +1,78 @@
+openapi: 3.0.0
+info:
+  version: '0.9'
+  title: File Submission Service API Endpoints
+  description: >-
+    The Engineering File Submission API are HTTP endpoints for submitting
+    an ancillary file to the DMS Engineering Database.
+        
+    Complete codebase is available on [Github](https://github.com/tmtsoftware/dms).
+
+    The collection of routes listed on this page are HTTP end points exposed by TMT Common Software.
+  license:
+    name: Apache 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0.html
+servers:
+  - url: 'https://future_irgsc_server/V1'
+externalDocs:
+  description: "References for time format"
+  url: https://datatracker.ietf.org/doc/html/rfc3339
+paths:
+  '/eng/files':
+    post:
+      description: "This endpoint allows adding one engineering ancillary file to
+          the Engineering Database with all required information"
+      summary: "Add one ancillary file to the Engineering Database"
+      operationId: addEngFile
+      requestBody:
+        description: required description of file and the file itself in the request body
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                channelName:
+                  type: string
+                  description: "The channelName must be unique. It consists of a subsystem and a name"
+                subsystem:
+                  $ref: '../shared.yml#/components/schemas/Subsystem'
+                userTime:
+                  type: string
+                  format: date-time
+                  description: "This is an optional time that can be provided if the default time is not correct.
+                                By default, the time used is the time when the file is submitted. Times 
+                                follow ISO-8601 format - yyyy-MM-ddTHH:mm:ssZ. Z is Zulu=UTC."
+                  example: "2025-04-12T23:20:50.52Z"
+                fileName:
+                  type: string
+                  description: "An optional filename can be provided."
+                tags:
+                  type: array
+                  items:
+                    $ref: '../shared.yml#/components/schemas/Tag'
+                file:
+                  type: string
+                  format: binary
+              required:
+                - channelName
+                - subsystem
+                - file
+            example:
+              channelName: temperatures
+              subsystem: ESEN
+              fileName: TopEndTemps-20420608
+              tags: [ name:location value:top-end, name:mode value:collect ]
+
+      responses: 
+        '200':
+          description: Description of file if successfully added including its fileId
+          content:
+            application/json:
+              schema: 
+                $ref: '../shared.yml#/components/schemas/FileItem'
+        '400':
+          description:
+            "Bad Request. Arguments provided were not correct or were incomplete: with explanatory text."
+        '404':
+          description: Not Found

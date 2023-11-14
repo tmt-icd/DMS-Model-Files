@@ -220,7 +220,7 @@ components:
       enum: [AOESW, APS, CIS, CLN, CRYO, CSW, DMS, DPS, ENC, ESEN, ESW, HNDL, HQ, IRIS, LGSF, M1COAT, M1CS, M1S, M2COAT, M2S, M3S, MODHIS, NFIRAOS, OSS, REFR, SCMS, SER, SOSS, STR, SUM, TCS, TINS, WFOS]
     ResampleMethod: #eas
       type: string
-      enum: [interp, nearest, past, binned]
+      enum: [interp, last, aggregate]
     EventType:
       description: type of event
       type: string
@@ -241,13 +241,15 @@ components:
       description: type of packing for multiple files
       type: string
       enum: [tar, zip, gzip]
+      default: zip
     CompressionType: #sdas
       description: type of compression
       type: string
       enum: [gzip, fpack]
     EventKey: #eas, mas
       type: string
-      description: name of event including prefix
+      description: name of event parammeter including prefix
+      example: tcs.mount.current.az,tcs.mount.current.el
     Tag: #eas, fss, sdas
       type: object
       properties:
@@ -377,18 +379,28 @@ components:
     FileItem:
       type: object
       properties:
-        uri: 
+        url:
           type: string
+          format: url
+          example: https://dmsinternalstorage/a/b/c/fileId
         timestamp:
           type: string
+          format: date-time
+          example: 2025-04-12T23:20:50.52Z
         subsystem:
           $ref: '#/components/schemas/Subsystem'
+          example: ESEN
         channelName:
           type: string
+          example: temperatures
+        fileId:
+          type: string
+          format: uuid
         tags:
           type: array
           items: 
             $ref: '#/components/schemas/Tag'
+          example: [ name:location value:top-end, name:mode value:collect ]
     FileData: #eas
       allOf: 
       - $ref: '#/components/schemas/DataResponse'
@@ -627,5 +639,4 @@ components:
                         - ["287.43","-63.85","N 6744","839","6","10.4"]
                         - ["023.48","+30.66","N 598","-182","3","0.7"]
 
-                      
-                      
+

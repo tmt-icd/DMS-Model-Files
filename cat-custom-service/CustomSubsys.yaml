@@ -1,0 +1,416 @@
+openapi: 3.0.0
+info:
+  title: DMS Custom Catalogs Subsystem API
+  description: |-
+    The subsystem API for Custom Catalog server is a secure API allowing addition, updating, and removal 
+    of catalog entries. All API endpoints require authentication according to the subsystem permission
+    assigned when the catalog is created. The
+    authenticated user must be authorized with a subsystem role in the 
+    token received from the CSW Authorization and Authentication Service in order to use the API. 
+    The token must be provided in the request header.
+  version: 0.9.0
+servers:
+  - url: 'https://future_custom_catalog_server/V1'
+tags:
+  - name: Catalog Information
+    description: Changes to a custom catalog that can be made by a subsystem user.
+  - name: Object Operations
+    description: Operations to add, remove, and update objects in a catalog.
+  - name: Object Maintenance
+    description: Operations that affect the object in the catalog
+security:
+  - subsys_auth:
+      - write:objects
+paths:
+  /subsys/{catalogId}:
+    get:
+      tags:
+        - Catalog Information
+      summary: Returns information on an existing catalog given by catalogId
+      description: 'Returns information on an existing catalog specified by catalogId'
+      operationId: queryCatalog
+      parameters:
+        - name: catalogId
+          in: path
+          description: catalog id of the catalog object to query for information
+          required: true
+          schema:
+            type: string
+            example: "C001"
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExistingCatalog'
+        '401':
+          description: The request did not contain authentication information
+        '403':
+          description: The client is not authorized for this operation
+        '404':
+          description: Catalog object with catalogId was not found
+
+  /subsys/{catalogId}/object:
+    post:
+      tags:
+        - Object Operations
+      summary: Add a new object to the existing catalog given by catalogId
+      description: 'Adds a new custom catalog with the default fields to the server. The fields and values
+       of the new object are contained in the JSON body.'
+      operationId: addCatalogObject
+      parameters:
+        - name: catalogId
+          in: path
+          description: catalog id of the catalog object to receive a new object
+          required: true
+          schema:
+            type: string
+            example: "C001"
+      requestBody:
+        description: Field values for the new object to be added to the catalog
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NewObject'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/NewObject'
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExistingObject'
+        '400':
+          description: Invalid object description provided, must provide all fields
+        '401':
+          description: The request did not contain authentication information
+        '403':
+          description: The client is not authorized for this operation
+        '404':
+          description: Catalog object with catalogId was not found
+
+  /subsys/{catalogId}/{objectId}:
+    get:
+      tags:
+        - Object Operations
+      summary: Return the contents of a specific objectId in a catalog
+      description: 'A convenience endpoint to return the fields of a specific object in a catalog'
+      operationId: getCatalogObject
+      parameters:
+        - name: catalogId
+          in: path
+          description: catalog id of the catalog object
+          required: true
+          schema:
+            type: string
+            example: C001
+        - name: objectId
+          in: path
+          description: id of an existing catalog object to get fields
+          required: true
+          schema:
+            type: string
+            example: APS23
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExistingObject'
+        '401':
+          description: The request did not contain authentication information
+        '403':
+          description: The client is not authorized for this operation
+        '404':
+          description: Catalog with catalogId or object with objectId was not found
+
+    patch:
+      tags:
+        - Object Operations
+      summary: Modify the fields of an existing object in an existing catalog
+      description: 'Updates an object with new field values. The fields and values
+       of the object are contained in the JSON request body.'
+      operationId: updateCatalogObject
+      parameters:
+        - name: catalogId
+          in: path
+          description: catalog id of the catalog object with the object that is to be updated
+          required: true
+          schema:
+            type: string
+            example: C001
+        - name: objectId
+          in: path
+          description: id of an existing catalog object to receive an updated value
+          required: true
+          schema:
+            type: string
+            example: APS23
+      requestBody:
+        description: Field values to be modified in the existing object. If any field is not present, the
+          entire request is rejected.
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/Field'
+              example: {"RA_Deg": "193.134", "Dec_Deg": "-5.32"}
+          application/x-www-form-urlencoded:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/Field'
+              example: {"RA_Deg": "193.134", "Dec_Deg": "-5.32"}
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExistingObject'
+        '400':
+          description: Invalid field description provided
+        '401':
+          description: The request did not contain authentication information
+        '403':
+          description: The client is not authorized for this operation
+        '404':
+          description: Catalog object with catalogId was not found
+
+    delete:
+      tags:
+        - Object Operations
+      summary: Delete an existing object from an existing catalog
+      description: 'Delete an existing object from an existing custom catalog given by catalogId.'
+      operationId: deleteCatalogObject
+      parameters:
+        - name: catalogId
+          in: path
+          description: catalog id of the catalog holding the hopefully to be deleted object
+          required: true
+          schema:
+            type: string
+            example: C001
+        - name: objectId
+          in: path
+          description: id of an existing catalog object to be deleted
+          required: true
+          schema:
+            type: string
+            example: APS23
+      responses:
+        '200':
+          description: successful operation
+        '400':
+          description: Invalid object ID description provided
+        '401':
+          description: The request did not contain authentication information
+        '403':
+          description: The client is not authorized for this operation
+        '404':
+          description: Catalog object with catalogId was not found
+
+  /subsys/include/{catalogId}/{objectId}:
+    patch:
+      tags:
+        - Object Maintenance
+      summary: Include the object in searches
+      description: 'By default all objects are included in searches. An object can be removed from
+          searches with exclude and added to searches with include.'
+      operationId: includeByObjectId
+      parameters:
+        - name: catalogId
+          in: path
+          description: the identifier of the catalog containing the object
+          required: true
+          schema:
+            type: string
+        - name: objectId
+          in: path
+          description: object id of the catalog object to be modified
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExistingObject'
+        '400':
+          description: Invalid objectId provided
+        '404':
+          description: Catalog object was not found
+        '405':
+          description: Invalid input or authorization
+
+  /subsys/exclude/{catalogId}/{objectId}:
+    patch:
+      tags:
+        - Object Maintenance
+      summary: Exclude the object from searches
+      description: 'By default all objects are included in searches. An object can be removed from
+          searches with exclude and added to searches with include.'
+      operationId: excludeByObjectId
+      parameters:
+        - name: catalogId
+          in: path
+          description: the identifier of the catalog containing the object
+          required: true
+          schema:
+            type: string
+        - name: "objectId"
+          in: path
+          description: object id of the catalog object to be modified
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExistingObject'
+        '400':
+          description: Invalid objectId provided
+        '404':
+          description: Catalog object was not found
+        '405':
+          description: Invalid input or authorization
+components:
+  schemas:
+    NewObject:
+      type: object
+      required:
+        - objectName
+        - RA_Deg
+        - Dec_Deg
+        - custom
+      properties:
+        objectName:
+          type: string
+          example: "My Object"
+        RA_Deg:
+          type: number
+          example: 140.23
+        Dec_Deg:
+          type: number
+          example: -22.345
+        custom:
+          type: array
+          items:
+            $ref: '#/components/schemas/Field'
+          example: [ "J_Mag": "22.1", "K_Mag": "5.3", "Valid": "true" ]
+    ExistingObject:
+      type: object
+      required:
+        - objectId
+        - catalogId
+        - objectName
+        - RA_Deg
+        - Dec_Deg
+        - RA
+        - DEC
+        - searchStatus
+        - custom
+      properties:
+        objectId:
+          type: string
+          example: "APS23"
+        catalogId:
+          type: string
+          example: "C012"
+        objectName:
+          type: string
+          example: "My Object"
+          default: "New Object"
+        RA_Deg:
+          type: number
+          example: 140.23
+          default: 0.0
+        Dec_Deg:
+          type: number
+          example: -22.345
+          default: 0.0
+        RA:
+          type: array
+          items:
+            description:
+              "An array of 3 numbers. First two are integers, last is a number as in [h, m, s] for hours, minutes, seconds of time"
+            type: number
+            minItems: 3
+            maxItems: 3
+          example: [ 14, 23, 15.43 ]
+        DEC:
+          type: array
+          items:
+            description:
+              "An array of 3 numbers. First two are integers, last is a number as in [h, m, s] for hours, minutes, seconds of arc"
+            type: number
+            minItems: 3
+            maxItems: 3
+          example: [ -39, 23, 44.217 ]
+        searchStatus:
+          type: boolean
+          default: true
+        custom:
+          type: array
+          items:
+            $ref: '#/components/schemas/Field'
+          example: [ "J_Mag": "21.2", "K_Mag": "5.3", "Valid": "true" ]
+    Field:
+      type: object
+      required:
+        - fieldName
+        - fieldValue
+      properties:
+        fieldName:
+          type: string
+        fieldValue:
+          type: string
+    ExistingCatalog:
+      type: object
+      required:
+        - catalogId
+        - catalogName
+        - numberOfObjects
+        - owner
+      properties:
+        catalogId:
+          type: string
+          example: "C001"
+        catalogName:
+          type: string
+          example: "MyCatalog"
+        numberOfObjects:
+          type: integer
+          example: 1234
+        objectPrefix:
+          type: string
+          description: 'Up to three letter prefix for objectIds.  Example: prefix: "APS" results in APS1 for an objectId.
+              If more than 3 characters are provided, the first 3 characters will be used.'
+          example: "APS"
+        owner:
+          type: string
+          description: The subsystem that is the owner of this catalog. The user must have a role with the subsystem in order to add objects to the catalog.
+          example: "APS"
+          enum:
+            - TCS
+            - APS
+            - AO
+  securitySchemes:
+    sys_auth:
+      type: oauth2
+      flows:
+        authorizationCode:
+          authorizationUrl: https://cswauthauthservice.tmt.org/oauth/dialog
+          tokenUrl: https://cswauthauthservice.tmt.org/oauth/dialog
+          scopes:
+            write:objects: Grants read, add, modify, and delete objects access
