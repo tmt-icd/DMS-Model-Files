@@ -1,4 +1,3 @@
-openapi: 3.0.0
 servers:
   - url: http://localhost:4000/
 components:
@@ -267,7 +266,7 @@ components:
         name:
           type: string
           description: name of parameter
-        index: 
+        index:
           type: integer
           minimum: 0
     ParameterValue:
@@ -284,7 +283,7 @@ components:
     ItemValue:
       type: object
       properties:
-        value: 
+        value:
           { }
         timestamp:
           type: string

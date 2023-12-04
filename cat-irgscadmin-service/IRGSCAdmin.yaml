@@ -39,6 +39,9 @@ paths:
              application/json:
                schema:
                  $ref: '#/components/schemas/Object'
+               example:
+                 objectId: "IRGSC-10034559"
+                 searchStatus: true
         '400':
           description: Invalid objectId provided
         '404':
@@ -71,6 +74,9 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Object'
+              example:
+                objectId: "IRGSC-10034559"
+                searchStatus: false
         '400':
           description: Invalid objectId provided
         '404':
@@ -88,6 +94,7 @@ components:
       properties:
         objectId:
           type: string
+          example: "IRGSC-10034559"
         searchStatus:
           type: boolean
   securitySchemes:

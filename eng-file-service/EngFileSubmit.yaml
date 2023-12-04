@@ -13,13 +13,18 @@ info:
     name: Apache 2.0
     url: https://www.apache.org/licenses/LICENSE-2.0.html
 servers:
-  - url: 'https://future_irgsc_server/V1'
+  - url: 'https://future_eng_file_server/V1'
+tags:
+  - name: File Submission Endpoints
+    description: Endpoints for adding a file to the Engineering Database.
 externalDocs:
   description: "References for time format"
   url: https://datatracker.ietf.org/doc/html/rfc3339
 paths:
   '/eng/files':
     post:
+      tags:
+        - File Submission Endpoints
       description: "This endpoint allows adding one engineering ancillary file to
           the Engineering Database with all required information"
       summary: "Add one ancillary file to the Engineering Database"
@@ -36,7 +41,7 @@ paths:
                   type: string
                   description: "The channelName must be unique. It consists of a subsystem and a name"
                 subsystem:
-                  $ref: '../shared.yml#/components/schemas/Subsystem'
+                  $ref: '../eng-shared/eng-shared.yaml#/components/schemas/Subsystem'
                 userTime:
                   type: string
                   format: date-time
@@ -50,7 +55,7 @@ paths:
                 tags:
                   type: array
                   items:
-                    $ref: '../shared.yml#/components/schemas/Tag'
+                    $ref: '../eng-shared/eng-shared.yaml#/components/schemas/Tag'
                 file:
                   type: string
                   format: binary
@@ -62,17 +67,19 @@ paths:
               channelName: temperatures
               subsystem: ESEN
               fileName: TopEndTemps-20420608
-              tags: [ name:location value:top-end, name:mode value:collect ]
+              tags:
+                - name: location
+                  value: top-end
+                - name: mode
+                  value: collect
 
       responses: 
         '200':
-          description: Description of file if successfully added including its fileId
+          description: Description of file if successfully added including its fileId.
           content:
             application/json:
               schema: 
-                $ref: '../shared.yml#/components/schemas/FileItem'
+                $ref: '../eng-shared/eng-shared.yaml#/components/schemas/FileItem'
         '400':
           description:
             "Bad Request. Arguments provided were not correct or were incomplete: with explanatory text."
-        '404':
-          description: Not Found

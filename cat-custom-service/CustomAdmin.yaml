@@ -23,8 +23,7 @@ security:
       - write:objects
 tags:
   - name: Administration
-    description: Administrative operations to the set of custom catalogs and to the fields
-      within a custom catalog.
+    description: Operations on the set of custom catalogs and to the fields within a custom catalog.
 paths:
   /admin/catalog:
     post:
@@ -35,7 +34,7 @@ paths:
         of the new catalog are contained in the JSON body.'
       operationId: addCatalog
       requestBody:
-        description: object id of the catalog object to be modified
+        description: User description of the new catalog.
         content:
           application/json:
             schema:
@@ -50,6 +49,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ExistingCatalog'
+              example:
+                catalogId: C001,
+                catalogName: MyCatalog,
+                numberOfObjects: 0,
+                objectPrefix: APS,
+                owner: APS
         '400':
           description: Invalid field description provided
         '401':
@@ -65,7 +70,7 @@ paths:
       tags:
         - Administration
       summary: Returns the server information for an existing catalog
-      description: 'Return existing catalog information for an existing catalog'
+      description: 'Return catalog information for an existing catalog using catalogId.'
       operationId: queryCatalog
       parameters:
         - name: catalogId
@@ -83,11 +88,11 @@ paths:
               schema:
                 $ref: '#/components/schemas/ExistingCatalog'
         '400':
-          description: Invalid catalogId provided
+          description: Invalid catalogId provided.
         '404':
-          description: Catalog object was not found
+          description: Catalog object was not found.
         '405':
-          description: Invalid input or authorization
+          description: Invalid input or authorization.
     patch:
       tags:
         - Administration
@@ -119,17 +124,23 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ExistingCatalog'
+              example:
+                catalogId: C001,
+                catalogName: MyNewCatalog,
+                numberOfObjects: 1234,
+                objectPrefix: APS,
+                owner: APS
         '400':
-          description: Invalid catalogId provided
+          description: Invalid catalogId provided.
         '404':
-          description: Catalog object was not found
+          description: Catalog object was not found.
         '405':
-          description: Invalid input or authorization
+          description: Invalid input or authorization.
     delete:
       tags:
         - Administration
       summary: Remove an existing catalog
-      description: 'Remove an existing custom catalog from the server.'
+      description: Remove an existing custom catalog from the server.
       operationId: deleteCatalog
       parameters:
         - name: catalogId
@@ -141,19 +152,19 @@ paths:
           example: "C001"
       responses:
         '200':
-          description: successful operation
+          description: Successful operation. Catalog removed.
         '400':
-          description: Invalid catalogId provided
+          description: Invalid catalogId provided.
         '404':
-          description: Catalog object was not found
+          description: Catalog object was not found.
         '405':
-          description: Invalid input or authorization
+          description: Invalid input or authorization.
   /admin/catalog/{catalogId}/field:
     get:
       tags:
         - Administration
-      summary: Returns the list of fields present in a specific catalog
-      description: 'Returns the names of the fields in a specific catalog'
+      summary: Returns the list of custom fields present in a specific catalog.
+      description: Returns the names of the custom fields in a specific catalog.
       operationId: queryCatalogField
       parameters:
         - name: catalogId
@@ -165,19 +176,19 @@ paths:
             example: "C001"
       responses:
         '200':
-          description: successful operation
+          description: Successful operation returns a list of custom catalog fields.
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Fields'
         '401':
-          description: The request did not contain authentication information
+          description: The request did not contain authentication information.
         '403':
-          description: The client is not authorized for this operation
+          description: The client is not authorized for this operation.
         '404':
-          description: Catalog object with catalogId was not found
+          description: Catalog object with catalogId was not found.
         '405':
-          description: Invalid input or authorization
+          description: Invalid input or authorization.
     patch:
       tags:
         - Administration
@@ -203,23 +214,23 @@ paths:
               $ref: '#/components/schemas/Field'
       responses:
         '200':
-          description: successful operation
+          description: The successful operation returns the new list of custom fields.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Field'
+                $ref: '#/components/schemas/Fields'
         '400':
-          description: Invalid field description provided
+          description: Invalid field description provided.
         '401':
-          description: The request did not contain authentication information
+          description: The request did not contain authentication information.
         '403':
-          description: The client is not authorized for this operation
+          description: The client is not authorized for this operation.
         '404':
-          description: Catalog object with catalogId was not found
+          description: Catalog object with catalogId was not found.
         '405':
-          description: Invalid input or authorization
+          description: Invalid input or authorization.
         '409':
-          description: A field with the suggested name already exists
+          description: A field with the suggested name already exists.
   /admin/catalog/{catalogId}/field/{fieldName}:
     delete:
       tags:
@@ -241,22 +252,28 @@ paths:
           required: true
           schema:
             type: string
-            example: "RMag"
+            example: RMag
       responses:
         '200':
-          description: successful operation
+          description: The successful operation returns the new list of custom fields.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Fields'
+              example:
+                - Parallax: double
         '400':
-          description: Invalid field description provided
+          description: Invalid field description provided.
         '401':
-          description: The request did not contain authentication information
+          description: The request did not contain authentication information.
         '403':
-          description: The client is not authorized for this operation
+          description: The client is not authorized for this operation.
         '404':
-          description: Catalog object with catalogId was not found
+          description: Catalog object with catalogId was not found.
         '405':
-          description: Invalid input or authorization
+          description: Invalid input or authorization.
         '409':
-          description: A field with the suggested name already exists
+          description: A field with the suggested name already exists.
 components:
   schemas:
     NewCatalog:
@@ -288,7 +305,7 @@ components:
       properties:
         catalogName:
           type: string
-          example: "MyCatalog"
+          example: "MyNewCatalog"
     ExistingCatalog:
       type: object
       required:
@@ -342,7 +359,9 @@ components:
       description: An array of Field objects, each with a name and type.
       items:
         $ref: '#/components/schemas/Field'
-      example: [ { "RMag": string }, { "Parallax": double } ]
+      example:
+        - RMag: string,
+        - Parallax: double
   securitySchemes:
     catalog_auth:
       type: "oauth2"

@@ -1,0 +1,64 @@
+openapi: 3.0.3
+info:
+  title: IVOA Cone Search
+  description: |-
+    This specification describes how a provider of an astronomical source catalog can publish that catalog to the Virtual Observatory in such a way that a 
+    simple cone search can be done. The data remains in the control of the data provider, served through a web server to the world, but the query profile and response 
+    profile are carefully controlled, as described below. It is intended that setting up this web service be simple enough that data providers will not have to spend 
+    too much time on it (their funding to support such services is typically small). At the same time, the service implementation and the data it provides can serve as 
+    a basis for more sophisticated tools.
+    <p>
+    This specification does not specify how Cone Search services are implemented, or how the data are stored or manipulated. The concern of this specification is how the 
+    data are exposed to the world through well-defined requests and responses.
+
+    This specification assumes that the data provider has already selected a catalog of astronomical sources. This catalog can be presented as a single table; 
+    it is expected that the table contains several columns.
+  version: 1.0.3
+  contact:
+    email: dal@ivoa.net
+externalDocs:
+  description: The IVOA Cone Service recommendation document dated February 22, 2008
+  url: https://ivoa.net/documents/cover/ConeSearch-20080222.html
+servers:
+  - url: 'http://{server}/{basePath}'
+    description: Example server name with assignable basePath
+    variables:
+      server:
+        description: This is the server that provides a Cone Search service.
+        default: some-conesearch-server.edu
+      basePath:
+        description: This would be assigned by a specific implementation.
+        default: vocone
+
+paths:
+  /:
+    get:
+      parameters:
+        - name: RA
+          in: query
+          description:
+            A right-ascension in the ICRS coordinate system for the positon of the center of the cone to search, given in decimal degrees.
+          schema:
+            type: number
+            example: 100.587
+        - name: DEC
+          in: query
+          description:
+            A declination in the ICRS coordinate system for the positon of the center of the cone to search, given in decimal degrees.
+          schema:
+            type: number
+            example: -30.45
+        - name: SR
+          in: query
+          description:
+            The radius of the cone to search, given in decimal degrees.
+          schema:
+            type: number
+            example: 0.0125
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/xml:
+              schema:
+                $ref: '../eng-shared/eng-shared.yaml#/components/schemas/VOTABLE'

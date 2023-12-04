@@ -159,13 +159,21 @@ paths:
               type: array
               items:
                 $ref: '#/components/schemas/Field'
-              example: {"RA_Deg": "193.134", "Dec_Deg": "-5.32"}
+              example:
+                - fieldName: RA_Deg
+                  fieldValue: 193.134
+                - fieldName: Dec_Deg
+                  fieldValue: -5.32
           application/x-www-form-urlencoded:
             schema:
               type: array
               items:
                 $ref: '#/components/schemas/Field'
-              example: {"RA_Deg": "193.134", "Dec_Deg": "-5.32"}
+              example:
+                - fieldName: RA_Deg
+                  fieldValue: 193.134
+                - fieldName: Dec_Deg
+                  fieldValue: -5.32
       responses:
         '200':
           description: successful operation
@@ -364,7 +372,13 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/Field'
-          example: [ "J_Mag": "21.2", "K_Mag": "5.3", "Valid": "true" ]
+          example:
+            - fieldName: J_Mag
+              fieldValue: 21.2
+            - fieldName: K_Mag
+              fieldValue: 5.3
+            - fieldName: Valid
+              fieldValue: true
     Field:
       type: object
       required:
