@@ -20,15 +20,8 @@ externalDocs:
   description: The IVOA Cone Service recommendation document dated February 22, 2008
   url: https://ivoa.net/documents/cover/ConeSearch-20080222.html
 servers:
-  - url: 'http://{server}/{basePath}'
-    description: Example server name with assignable basePath
-    variables:
-      server:
-        description: This is the server that provides a Cone Search service.
-        default: some-conesearch-server.edu
-      basePath:
-        description: This would be assigned by a specific implementation.
-        default: vocone
+  - url: 'https://future_catalog_server/V1/cone'
+    description: This is the server that provides a Cone Search service.
 
 paths:
   /:
@@ -37,14 +30,14 @@ paths:
         - name: RA
           in: query
           description:
-            A right-ascension in the ICRS coordinate system for the positon of the center of the cone to search, given in decimal degrees.
+            A right-ascension in the ICRS coordinate system for the position of the center of the cone to search, given in decimal degrees.
           schema:
             type: number
             example: 100.587
         - name: DEC
           in: query
           description:
-            A declination in the ICRS coordinate system for the positon of the center of the cone to search, given in decimal degrees.
+            A declination in the ICRS coordinate system for the position of the center of the cone to search, given in decimal degrees.
           schema:
             type: number
             example: -30.45

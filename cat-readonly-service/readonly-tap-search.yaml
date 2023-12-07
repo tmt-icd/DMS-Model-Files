@@ -1,0 +1,347 @@
+openapi: "3.0.3"
+info:
+  title: IVOA TAP Search
+  description: |-
+    The Table Access Protocol (TAP) is a web-service protocol that gives access to collections of tabular data referred to collectively as a tableset. 
+    TAP services accept queries posed against the tableset available via the service and return the query response as another table, in accord with the relational model. 
+    Queries may be submitted using various query languages and may execute synchronously or asynchronously. Support for the Astronomical Data Query Language ADQL (Osuna and Ortiz et al., 2008) 
+    is mandatory; support for other query languages is supported but optional.
+    
+    The result of a TAP query is another table, normally returned as a VOTable. Support for VOTable output is mandatory; all other formats are optional.
+    
+    The table collections made accessible via TAP are typically stored in relational database management systems (RDBMS). A TAP service exposes the 
+    database schema to client applications so that queries can be posed directly against arbitrary data tables available via the service.
+    
+    Multi-table operations such as joins or cross matches are possible provided the tables are all managed by the local TAP service, 
+    and provided the service supports these capabilities. Larger scale operations such as a distributed cross match are also possible, 
+    but require combining the results of multiple TAP services.
+  version: "1.1"
+externalDocs:
+  description: The IVOA TAP Service recommendation document dated September 27, 2019
+  url: https://www.ivoa.net/documents/TAP/20190927/REC-TAP-1.1.html
+servers:
+  - url: 'https://future_catalog_server/V1/tap'
+    description: This is the server that provides a Cone Search service.
+
+paths:
+  /sync:
+    get:
+      summary: "IVOA TAP v1.1 get endpoint"
+      tags:
+        - TAP
+      description: TAP synchronous query endpoint
+      parameters:
+        - $ref: '#/components/parameters/LangParam'
+        - $ref: '#/components/parameters/QueryParam'
+        - $ref: '#/components/parameters/FormatParam'
+        - $ref: '#/components/parameters/ResponseFormatParam'
+        - $ref: '#/components/parameters/MaxRecParam'
+        - $ref: '#/components/parameters/UploadParam'
+
+      responses:
+        '200':
+          $ref: '#/components/responses/Success'
+        '401':
+          $ref: '#/components/responses/FourOhOne'
+        '404':
+          $ref: '#/components/responses/FourOhFour'
+        '500':
+          $ref: '#/components/responses/FiveOhOh'
+        '503':
+          $ref: '#/components/responses/FiveOhThree'
+        default:
+          $ref: '#/components/responses/DefaultError'
+
+    post:
+      summary: "IVOA TAP v1.1 post endpoint"
+      tags:
+        - TAP
+      description: "TAP synchronous query endpoint."
+      parameters:
+        - $ref: '#/components/parameters/LangParam'
+        - $ref: '#/components/parameters/QueryParam'
+        - $ref: '#/components/parameters/FormatParam'
+        - $ref: '#/components/parameters/ResponseFormatParam'
+        - $ref: '#/components/parameters/MaxRecParam'
+        - $ref: '#/components/parameters/UploadParam'
+      responses:
+        '200':
+          $ref: '#/components/responses/Success'
+        '401':
+          $ref: '#/components/responses/FourOhOne'
+        '404':
+          $ref: '#/components/responses/FourOhFour'
+        '500':
+          $ref: '#/components/responses/FiveOhOh'
+        '503':
+          $ref: '#/components/responses/FiveOhThree'
+        default:
+          $ref: '#/components/responses/DefaultError'
+
+
+  /availability:
+    get:
+      tags:
+        - Support Interfaces
+      summary: VOSI Availability
+      description: |
+        <h4> Notes:</h4>
+        <p>Indicates whether the service is operable and the reliability of the service for extended and scheduled requests.
+      responses:
+        '200':
+          description: A VOSI availability document in XML
+          content:
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/availability'
+        default:
+          $ref: '#/components/responses/DefaultError'
+
+  /capabilities:
+    get:
+      tags:
+        - Support Interfaces
+      summary: VOSI Capabilities
+      description: |
+        Provides the service metadata in the form of a list of Capability descriptions.  Each of these descriptions is an
+        XML element that:
+        <ul>
+          <li>states that the service provides a particular, IVOA-standard function;</li>
+          <li>lists the interfaces for invoking that function;</li>
+          <li>records any details of the implementation of the function that are not defined as default or constant in the standard for that function.</li>
+      responses:
+        '200':
+          description: A VOSI capabilities document in XML
+          content:
+            text/xml:
+              schema:
+                type: object
+                properties:
+                  xmlns:xsi:
+                    type: string
+                    enum:
+                      - "http://www.w3.org/2001/XMLSchema-instance"
+                    xml:
+                      attribute: true
+                  xmlns:vod:
+                    type: string
+                    enum:
+                      - "http://www.ivoa.net/xml/VODataService/v1.1"
+                    xml:
+                      attribute: true
+                  caps:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/capability'
+                xml:
+                  name: capabilities
+                  namespace: http://www.ivoa.net/xml/VOSICapabilities/v1.0
+                  prefix: vosi
+                  wrapped: true
+
+        '500':
+          $ref: '#/components/responses/FiveOhOh'
+        '503':
+          $ref: '#/components/responses/FiveOhThree'
+        default:
+          $ref: '#/components/responses/DefaultError'
+
+  /tables:
+    get:
+      tags:
+        - Support Interfaces
+      summary: VOSI Tables
+      description:
+        Provides the table metadata in the form of a TableSet descriptions.
+      responses:
+        '200':
+          description: A VOSI Tables document in XML.
+          content:
+            text/xml:
+              schema:
+                $ref: '#/components/schemas/tables'
+
+        '500':
+          $ref: '#/components/responses/FiveOhOh'
+        '503':
+          $ref: '#/components/responses/FiveOhThree'
+        default:
+          $ref: '#/components/responses/DefaultError'
+
+components:
+  schemas:
+    availability:
+      type: object
+      xml:
+        namespace: http://www.ivoa.net/xml/VOSIAvailability/v1.0
+        prefix: vosi
+      properties:
+        available:
+          type: boolean
+          xml:
+            attribute: false
+            prefix: vosi
+          example: true
+        note:
+          type: string
+          xml:
+            attribute: false
+            prefix: vosi
+          example:
+            The service is accepting queries.
+
+
+    capability: # Note this doesn't quite translate to XML properly, note parameter of accURL
+      type: object
+      xml:
+        name: capability
+      properties:
+        standardID:
+          type: string
+          format: uri
+          xml:
+            attribute: true
+          example:
+            ivo://ivoa.net/std/VOSI#capabilities
+        interface:
+          type: object
+          properties:
+            "xsi:type":
+              type: string
+              enum:
+                - "vod:ParamHTTP"
+              xml:
+                attribute: true
+            version:
+              type: string
+              xml:
+                attribute: true
+            accURL:
+              type: object
+              xml:
+                name: accessURL
+                wrapped: true
+              properties:
+                use:
+                  type: string
+                  xml:
+                    attribute: true
+                  example:
+                    use:
+                      full
+          example:
+            version: "1.0"
+            xsi:type: vod:ParamHTTP
+            accessURL: 'https://future_catalog_server/V1/tap/capabilities'
+
+    tables: # can be completed
+      type: object
+      xml:
+        namespace: http://www.ivoa.net/xml/VOSITables/v1.0
+        prefix: vosi
+      properties:
+        available:
+          type: boolean
+          xml:
+            attribute: true
+            prefix: vosi
+        note:
+          type: string
+          xml:
+            attribute: true
+            prefix: vosi
+
+    Error:
+      required:
+        - code
+        - message
+      properties:
+        code:
+          type: integer
+          format: int32
+        message:
+          type: string
+      example:
+        code: 1
+        message: An unexplained service error has occurred.
+
+  parameters:
+    LangParam:
+      name: LANG
+      in: query
+      description: "Specify the query language used in the QUERY parameter."
+      required: true
+      schema:
+        type: string
+        default: "ADQL"
+    QueryParam:
+      name: QUERY
+      in: query
+      description: "Specify the ADQL query."
+      required: true
+      allowReserved: true
+      schema:
+        type: string
+        example:
+          "SELECT * FROM magnitudes AS m WHERE m.r>=10 AND m.r<=16"
+    FormatParam:
+      name: FORMAT
+      in: query
+      deprecated: true
+      description:
+        'Supported for backwards compatibility to 1.0 (see: RESPONSEFORMAT)'
+      required: false
+      schema:
+        type: string
+    ResponseFormatParam:
+      name: RESPONSEFORMAT
+      in: query
+      description: 'Select output table format.'
+      required: false
+      schema:
+        type: string
+        enum:
+          - votable
+          - json
+        default: votable
+    MaxRecParam:
+      name: MAXREC
+      in: query
+      description: 'Request a specific limit on number of rows to return.'
+      required: false
+      schema:
+        type: integer
+        format: int64
+        default: 1000
+    UploadParam:
+      name: UPLOAD
+      in: query
+      description: 'Specify name,location pair for a table to be uploaded and used in the query.'
+      required: false
+      allowReserved: true
+      schema:
+        type: string
+        example:
+          "table1,http://example.com/t1"
+  responses:
+    Success:
+      description: "Successful response."
+      content:
+        application/x-votable+/xml:
+          schema:
+            $ref: '../eng-shared/eng-shared.yaml#/components/schemas/VOTABLE'
+
+    FourOhOne:
+      description: "Unauthorized - User not authenticated"
+    FourOhFour:
+      description: "Not Found - User not found"
+    FiveOhOh:
+      description: "Some dreadful internal error"
+    FiveOhThree:
+      description: "The service is busy doing the work of others"
+    DefaultError:
+      description: "Unexpected error of unknown origin"
+      content:
+        text/xml:
+          schema:
+            $ref: '#/components/schemas/Error'

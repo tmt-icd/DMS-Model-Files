@@ -12,58 +12,24 @@ components:
       name: Authorization
       in: header
   parameters:
-    startDate:
-      name: startDate #cds
-      in: query
-      description: time range start date
-      schema:
-        type: string
-    startTime: #cds, sdas
+    startTime: # fas  cds, sdas
       name: startTime
       in: query
-      description: time range start time
+      required: false
+      description: All queries include a time range. startTime is the oldest time in RFC 3339 format.
       schema:
         type: string
-    endDate: #cds, sdas
-      name: endDate
-      in: query
-      description: time range end date
-      schema:
-        type: string
-    endTime: #cds, sdas
+        format: date-time
+        example: 2025-04-12T23:20:50.52Z
+    endTime: # fas  cds, sdas
       name: endTime
       in: query
-      description: time range end time
+      required: false
+      description: All queries include a time range. endTime is the most recent time in RFC 3339 format.
       schema:
         type: string
-    startDateReq: #eas
-      name: startDate
-      in: query
-      description: time range start date
-      required: true
-      schema:
-        type: string
-    startTimeReq: #eas
-      name: startTime
-      in: query
-      description: time range start time
-      required: true
-      schema:
-        type: string
-    endDateReq: #eas
-      name: endDate
-      in: query
-      description: time range end date
-      schema:
-        type: string
-      required: true
-    endTimeReq: #eas
-      name: endTime
-      in: query
-      description: time range end time
-      required: true
-      schema:
-        type: string
+        format: date-time
+        example: 2025-04-12T23:20:48.00Z
     originalFilename: #cds
       name: originalFilename
       in: query
@@ -297,7 +263,7 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/ParameterValue'
-    EngData: #eas, mas
+    EngData: #mas
       allOf: 
       - $ref: '#/components/schemas/DataResponse'
       - type: object
@@ -306,118 +272,7 @@ components:
             type: array
             items:
               $ref: '#/components/schemas/EventData'
-    SimpleLogData: #eas
-      type: string
-      example: "[INFO] Attempting to find connection (LocationServiceExampleClientApp.scala 131)\n[DEBUG] Trying HTTP connection (LocationServiceExampleClientApp.scala 134)"
-    LogItem:
-      type: object
-      properties:
-        "@prefix": 
-          type: string
-        "@subsystem":
-          $ref: '#/components/schemas/Subsystem'
-        "@componentName":
-          type: string
-        "@host": 
-          type: string
-        "@name":
-          type: string
-        "@severity": 
-          type: string
-        "@version": 
-          type: number
-        actor: 
-          type: string
-        class: 
-          type: string
-        file: 
-          type: string
-        line: 
-          type: integer
-        message: 
-          type: string
-        timestamp:
-          type: string
-    LogData: #eas 
-      allOf: 
-      - $ref: '#/components/schemas/DataResponse'
-      - type: object
-        properties:
-          messages:
-            type: array
-            items: 
-              $ref: '#/components/schemas/LogItem'
-            example: 
-              - "@prefix": "ESW.my-component-name"
-                "@subsystem": "ESW"
-                "@componentName": "my-component-name"
-                "@host": "tmthost.local"
-                "@name": "LocationServiceExampleClient"
-                "@severity": "INFO"
-                "@version": "0.1"
-                actor: "akka://csw-examples-locationServiceClient@10.131.23.195:53618/user/$a"
-                class: "csw.location.LocationServiceExampleClient"
-                file: "LocationServiceExampleClientApp.scala"
-                line: 149
-                message: "Sending query to service: ping"
-                timestamp: "2017-11-30T10:58:03.102Z"
-              - "@prefix": "ESW.my-second-component"
-                "@subsystem": "ESW"
-                "@componentName": "my-second-component"
-                "@host": "tmthost2.local"
-                "@name": "LocationServiceExampleServer"
-                "@severity": "DEBUG"
-                "@version": "0.2"
-                actor: "akka://csw-examples-locationServiceClien2@10.131.23.196:53618/user/$a"
-                class: "csw.location.LocationServiceExampleClient"
-                file: "LocationServiceExampleServiceApp.scala"
-                line: 243
-                message: "Sending response: pong"
-                timestamp: "2017-11-30T10:58:03.112Z"
-              
-    FileItem:
-      type: object
-      properties:
-        url:
-          type: string
-          format: url
-          example: https://dmsinternalstorage/a/b/c/fileId
-        timestamp:
-          type: string
-          format: date-time
-          example: 2025-04-12T23:20:50.52Z
-        subsystem:
-          $ref: '#/components/schemas/Subsystem'
-          example: ESEN
-        channelName:
-          type: string
-          example: temperatures
-        fileId:
-          type: string
-          format: uuid
-        tags:
-          type: array
-          items: 
-            $ref: '#/components/schemas/Tag'
-          example: [ name:location value:top-end, name:mode value:collect ]
-    FileData: #eas
-      allOf: 
-      - $ref: '#/components/schemas/DataResponse'
-      - type: object
-        properties:
-          files: 
-            type: array
-            items:
-              $ref: '#/components/schemas/FileItem'
-    AnyData: #eas
-      type: array
-      items:
-        anyOf:
-          - $ref: '#/components/schemas/EngData'
-          - $ref: '#/components/schemas/LogData'
-          - $ref: '#/components/schemas/FileData'
-        discriminator: 
-          propertyName: dataResponseType
+
     ScienceSearchResultItem: #sdas
       type: object
       properties: 
