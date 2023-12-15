@@ -28,7 +28,7 @@ paths:
       tags:
         - Discovery Endpoints
       description: >-
-        Returns a list of file information on engineering ancillary files that match query parameters. Information
+        Returns a list of file information for engineering ancillary files that match query parameters. Information
         includes a link to each document and a *fileId* that can also be used for retrieval. 
         Results can be returned as JSON (default) or as an IVOA VOTable. In both cases, the information is the same.
       summary: Discover ancillary files in the Engineering Database
@@ -117,7 +117,7 @@ paths:
       parameters:
         - in: path
           name: fileId
-          description: FileId of a previously stored ancillary files for retrieval
+          description: File ID of a previously stored ancillary file to be retrieved
           required: true
           schema:
             type: string
@@ -136,7 +136,7 @@ paths:
           description:
             "Bad Request. Arguments provided were not correct or were incomplete: with explanatory text."
         '404':
-          description: "No files was found with provied fileid."
+          description: "No file was found with provided fileId."
   /eng/files:
     get:
       tags:
@@ -144,7 +144,7 @@ paths:
       description:
         Get one or more ancillary files based on one or more fileIds.
         Files will be returned in a compressed collection in the format specified by the optional package parameter.
-        The default package value is zip.
+        The default package value is gzip.
         <p>
         If any of the fileIds cannot be associated with a file, the entire request is rejected.
       summary: Retrieve one or more engineering ancillary files from the Engineering Database
@@ -156,7 +156,7 @@ paths:
         required: true
         style: form
         explode: false
-        example: a1c6a2ab-4b01-4253-b4c9-70e04b3b48fc, a1c6a2ab-4b01-4253-b4c9-70e04b3b53af
+        example: [a1c6a2ab-4b01-4253-b4c9-70e04b3b48fc, a1c6a2ab-4b01-4253-b4c9-70e04b3b53af]
         schema:
           type: array
           minItems: 1
@@ -191,7 +191,7 @@ paths:
         Retrieve all engineering files for a subsystem over a specified time range.
         <p>
         Files will be returned in a compressed collection in the format specified by the optional package parameter.
-        The default package value is zip.
+        The default package value is gzip.
       summary: Retrieve all engineering files for a subsystem over a specified time range
       operationId: retrieveSubsystemAll
       parameters:

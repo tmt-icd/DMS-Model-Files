@@ -5,7 +5,7 @@ components:
       in: query
       required: true
       description: All queries include a time range. startTime is the oldest time in RFC 3339 format.
-      example: 2025-04-12T23:20:50.52Z
+      example: 2025-04-12T23:20:40.52Z
       schema:
         type: string
         format: date-time
@@ -20,10 +20,10 @@ components:
         format: date-time
   schemas:
     Subsystem: # fas
-      name: subsystem
       description: name of subsystem
       type: string
       enum: [ AOESW, APS, CIS, CLN, CRYO, CSW, DMS, DPS, ENC, ESEN, ESW, HNDL, HQ, IRIS, LGSF, M1COAT, M1CS, M1S, M2COAT, M2S, M3S, MODHIS, NFIRAOS, OSS, REFR, SCMS, SER, SOSS, STR, SUM, TCS, TINS, WFOS ]
+      example: ESEN
     Tag: #fas, fss
       type: object
       properties:
@@ -46,9 +46,7 @@ components:
           format: date-time
           example: 2025-04-12T23:20:50.52Z
         subsystem:
-          schema:
-            $ref: '#/components/schemas/Subsystem'
-            example: ESEN
+          $ref: '#/components/schemas/Subsystem'
         channelName:
           type: string
           example: topEndTemps
@@ -96,7 +94,8 @@ components:
     ParameterPath: #equsery
       type: array
       description: full path of an event parameter including prefix
-      items: string
+      items:
+        type: string
       example: tcs.mount.current.az
 
     KeyType:
@@ -109,32 +108,38 @@ components:
       properties:
         values:
           type: array
-          items: integer
+          items:
+            type: integer
     NumberValue:
       type: object
       properties:
         values:
           type: array
-          items: number
+          items:
+            type: number
     StringValue:
       type: object
       properties:
         values:
           type: array
-          items: string
+          items:
+            type: string
     BooleanValue:
       type: object
       properties:
         values:
           type: array
-          items: boolean
+          items:
+            type: boolean
     Parameter:
       type: object
       properties:
         keyType:
           $ref: '#/components/schemas/KeyType'
-        keyName: string
-        units: string
+        keyName:
+          type: string
+        units:
+          type: string
         values:
           oneOf:
             - $ref: '#/components/schemas/IntegerValue'
@@ -184,7 +189,7 @@ components:
                       keyType: DoubleKey,
                       keyName: az,
                       values: [ 123.456 ],
-                      units: degress
+                      units: degrees
                     },
                     {
                       keyType: IntKey,
@@ -302,7 +307,7 @@ components:
                 subsystem: TCS,
                 channelName: mountPointing,
                 fieldId: "3fa85f64-5717-4562-c34c-2c963f66ada2",
-                tags: [ name:type value:pointig, name:operator value:jjohnson ]
+                tags: [ name:type value:pointing, name:operator value:jjohnson ]
               }
             ]
           },
@@ -354,7 +359,7 @@ components:
                       keyType: DoubleKey,
                       keyName: az,
                       values: [ 123.456 ],
-                      units: degress
+                      units: degrees
                     },
                     {
                       keyType: DoubleKey,
@@ -363,7 +368,7 @@ components:
                       units: degrees
                     },
                     {
-                      keyType: BoolesanKey,
+                      keyType: BooleanKey,
                       keyName: inPosition,
                       values: [ true ],
                       units: NoUnits
@@ -382,7 +387,7 @@ components:
                       keyType: DoubleKey,
                       keyName: az,
                       values: [ 123.602 ],
-                      units: degress
+                      units: degrees
                     },
                     {
                       keyType: DoubleKey,
@@ -402,12 +407,6 @@ components:
           }
         ]
 
-    FileContent:
-      application/octet-stream:
-        schema:
-          type: string
-          format: binary
-
     VOTABLE: #conesearch
       type: object
       properties:
@@ -418,7 +417,7 @@ components:
             attribute: true
         xmlns:
           type: string
-          example: http://www.ivoa.net/xml/VOTable/v1.4
+          example: https://www.ivoa.net/xml/VOTable/v1.4
           xml:
             attribute: true
         RESOURCE:

@@ -25,8 +25,8 @@ paths:
     post:
       tags:
         - File Submission Endpoints
-      description: "This endpoint allows adding one engineering ancillary file to
-          the Engineering Database with all required information"
+      description: "This endpoint allows one engineering ancillary file to
+          be added to the Engineering Database with all required information"
       summary: "Add one ancillary file to the Engineering Database"
       operationId: addEngFile
       requestBody:

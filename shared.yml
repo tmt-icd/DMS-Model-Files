@@ -7,7 +7,7 @@ components:
         Represents Access token that applications use to make API requests on behalf of a user.
         The access token represents the authorization of a specific application to access specific parts of a user’s data.
         Config service admin API requires you to provide this access token in header.
-        To know more on how to authenticate and authorize yourself and get access token, refer this http://tmtsoftware.github.io/csw/services/aas.html
+        To know more on how to authenticate and authorize yourself and get access token, refer this https://tmtsoftware.github.io/csw/services/aas.html
       type: apiKey
       name: Authorization
       in: header
@@ -33,7 +33,7 @@ components:
     originalFilename: #cds
       name: originalFilename
       in: query
-      description: filename of file when submitting to DMS
+      description: filename of file when submitted to DMS
       schema:
         type: string
     programId: #sdas
@@ -155,6 +155,7 @@ components:
   schemas:
     ExposureId: #cds, mas, sdss, sdas
       type: string
+      example: "2022A-P123-O044-IRIS-IMG-DRK-0023-00"
     ObserveEvent: #mas
       type: string
     HeaderItem: 
@@ -213,7 +214,7 @@ components:
       enum: [gzip, fpack]
     EventKey: #eas, mas
       type: string
-      description: name of event parammeter including prefix
+      description: name of event parameter including prefix
       example: tcs.mount.current.az,tcs.mount.current.el
     Tag: #eas, fss, sdas
       type: object
@@ -317,7 +318,7 @@ components:
             attribute: true
         xmlns:
           type: string
-          example: http://www.ivoa.net/xml/VOTable/v1.3
+          example: https://www.ivoa.net/xml/VOTable/v1.3
           xml:
             attribute: true
         RESOURCE: 

@@ -2,8 +2,8 @@ openapi: "3.0.3"
 info:
   title: IVOA TAP Search
   description: |-
-    The Table Access Protocol (TAP) is a web-service protocol that gives access to collections of tabular data referred to collectively as a tableset. 
-    TAP services accept queries posed against the tableset available via the service and return the query response as another table, in accord with the relational model. 
+    The Table Access Protocol (TAP) is a web-service protocol that gives access to collections of tabular data referred to collectively as a *tableset*. 
+    TAP services accept queries posed against the *tableset* available via the service and return the query response as another table, in accord with the relational model. 
     Queries may be submitted using various query languages and may execute synchronously or asynchronously. Support for the Astronomical Data Query Language ADQL (Osuna and Ortiz et al., 2008) 
     is mandatory; support for other query languages is supported but optional.
     
@@ -84,9 +84,7 @@ paths:
       tags:
         - Support Interfaces
       summary: VOSI Availability
-      description: |
-        <h4> Notes:</h4>
-        <p>Indicates whether the service is operable and the reliability of the service for extended and scheduled requests.
+      description: Indicates whether the service is operable and the reliability of the service for extended and scheduled requests.
       responses:
         '200':
           description: A VOSI availability document in XML
@@ -106,7 +104,7 @@ paths:
         Provides the service metadata in the form of a list of Capability descriptions.  Each of these descriptions is an
         XML element that:
         <ul>
-          <li>states that the service provides a particular, IVOA-standard function;</li>
+          <li>states a particular, IVOA-standard function that the service provides;</li>
           <li>lists the interfaces for invoking that function;</li>
           <li>records any details of the implementation of the function that are not defined as default or constant in the standard for that function.</li>
       responses:
@@ -126,7 +124,7 @@ paths:
                   xmlns:vod:
                     type: string
                     enum:
-                      - "http://www.ivoa.net/xml/VODataService/v1.1"
+                      - "https://www.ivoa.net/xml/VODataService/v1.1"
                     xml:
                       attribute: true
                   caps:
@@ -135,7 +133,7 @@ paths:
                       $ref: '#/components/schemas/capability'
                 xml:
                   name: capabilities
-                  namespace: http://www.ivoa.net/xml/VOSICapabilities/v1.0
+                  namespace: https://www.ivoa.net/xml/VOSICapabilities/v1.0
                   prefix: vosi
                   wrapped: true
 
@@ -173,7 +171,7 @@ components:
     availability:
       type: object
       xml:
-        namespace: http://www.ivoa.net/xml/VOSIAvailability/v1.0
+        namespace: https://www.ivoa.net/xml/VOSIAvailability/v1.0
         prefix: vosi
       properties:
         available:
@@ -237,7 +235,7 @@ components:
     tables: # can be completed
       type: object
       xml:
-        namespace: http://www.ivoa.net/xml/VOSITables/v1.0
+        namespace: https://www.ivoa.net/xml/VOSITables/v1.0
         prefix: vosi
       properties:
         available:
@@ -322,7 +320,7 @@ components:
       schema:
         type: string
         example:
-          "table1,http://example.com/t1"
+          "table1,https://example.com/t1"
   responses:
     Success:
       description: "Successful response."

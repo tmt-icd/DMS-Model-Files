@@ -3,15 +3,15 @@ info:
   version: '0.9'
   title: Engineering Database Query Service API
   description: >-
-    The Engineering Query Service API is HTTP endpoints for discovering, querying, and exporting events, 
+    The Engineering Query Service API consists HTTP endpoints for discovering, querying, and exporting events 
     and logs in the Engineering Database. An endpoint for gathering all subsystem engineering information
     is included. This endpoint accesses the file access API.
     <p>
-    File access and submittal is handled by the Engineering File and Access APIs covered elsewhere.
+    File submission and retrieval is handled by the Engineering File and Access Service, covered elsewhere.
     <p>
     The complete DMS codebase is available on [Github](https://github.com/tmtsoftware/dms).
     <p>
-    The collection of routes listed on this page are HTTP endpoints exposed by TMT Common Software.
+    The routes listed on this page are HTTP endpoints exposed by TMT Common Software.
   license:
     name: Apache 2.0
     url: https://www.apache.org/licenses/LICENSE-2.0.html
@@ -19,7 +19,7 @@ servers:
   - url: 'https://future_eng_query_server/V1'
 tags:
   - name: Engineering Queries
-    description: Endpoints for querying events in Engineering Database.
+    description: Endpoints for querying events and logs in Engineering Database.
 externalDocs:
   description: "References for the required time format"
   url: https://datatracker.ietf.org/doc/html/rfc3339

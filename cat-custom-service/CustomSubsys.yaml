@@ -56,7 +56,7 @@ paths:
       tags:
         - Object Operations
       summary: Add a new object to the existing catalog given by catalogId
-      description: 'Adds a new custom catalog with the default fields to the server. The fields and values
+      description: 'Adds a new object to the custom catalog. The fields and values
        of the new object are contained in the JSON body.'
       operationId: addCatalogObject
       parameters:
