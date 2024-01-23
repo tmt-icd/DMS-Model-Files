@@ -56,6 +56,14 @@ paths:
                   type: array
                   items:
                     $ref: '#/components/schemas/binding'
+                output:
+                  description: An optional parameter that when present and set to true, indicates the results should be returned as a file.
+                  type: string
+                  enum:
+                    - PLOT
+                    - EXPORT
+                    - DISPLAY
+                  default: DISPLAY
               required:
                 - statement
             examples:
@@ -63,12 +71,14 @@ paths:
                 value: # fully ad hoc statement
                   statement: "SELECT az,el FROM tcs.demands WHERE time >= '2023-10-29T08:00:00Z' AND time <= '2023-10-29T12:00:00Z'"
                   timeout: 15
+                  output: PLOT
                   database: EVENTS
               example2:
                 value: # canned with parameters
                   statement: "SELECT ?,? FROM ? WHERE time >= '2023-10-29T08:00:00Z' AND time <= '2023-10-29T12:00:00Z'"
                   timeout: 15
                   database: DEMANDS
+                  output: DISPLAY
                   bindings:
                    - field: 1
                      value: alt
@@ -171,6 +181,17 @@ paths:
               $ref: '../eng-shared/eng-shared.yaml#/components/schemas/ParameterPath'
           example:
             [ tcs.mount.current.alt, tcs.mount.current.az ]
+        - name: output
+          in: query
+          description: An optional parameter that when present and set to true, indicates the results should be returned as a file.
+          schema:
+            type: string
+            enum:
+              - PLOT
+              - EXPORT
+              - DISPLAY
+            default: DISPLAY
+          example: DISPLAY
       responses:
         '200':
           description: OK, Events returned with no issues.

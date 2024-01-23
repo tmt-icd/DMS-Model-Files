@@ -19,6 +19,8 @@ tags:
     description: Endpoints for file queries about engineering files in the Engineering Database.
   - name: Retrieval Endpoints
     description: Endpoints for retrieving an engineering file from the Engineering Database.
+  - name: Admin Endpoints
+    description: Endpoints for operating on the store of ancillary files.
 externalDocs:
   description: "References for time format"
   url: https://datatracker.ietf.org/doc/html/rfc3339
@@ -47,12 +49,12 @@ paths:
           example: APS
           schema:
             $ref: '../eng-shared/eng-shared.yaml#/components/schemas/Subsystem'
-        - name: channelName
+        - name: channel
           in: query
           required: true
           example: apsChannel
-          description: Specify a channelName to use to create a unique topic key with the provided subsystem.
-            An example topic is APS.apsChannel
+          description: Specify a channel to use to create a unique topic key with the provided subsystem.
+            A complete channelName example is APS.apsChannel
           schema:
             type: string
         - name: resultType
@@ -94,10 +96,53 @@ paths:
               type: string
             example:
              [top-end, blue]
-
       responses:
         '200':
-          description: The response for a successful discovery query is a fileItem object
+          description: The response for a successful discovery query is a list fileItem object
+          content:
+            application/json:
+              schema:
+                $ref: '../eng-shared/eng-shared.yaml#/components/schemas/FileData'
+        '400':
+          description:
+            "Bad Request. Arguments provided were not correct or were incomplete: with explanatory text provided."
+        '404':
+          description: "No files were found using these parameters."
+
+  '/eng/files/since':
+    get:
+      tags:
+        - Discovery Endpoints
+      description: >-
+        Returns a list of file information on engineering ancillary files that have been added since the
+        provided timestamp.
+        Results can be returned as JSON (default) or as an IVOA VOTable. In both cases, the information is the same.
+      summary: Discover ancillary files in the Engineering Database created since a specific timestamp
+      operationId: sinceFiles
+      externalDocs:
+        description: "Reference for IVOA VOTable"
+        url: https://www.ivoa.net/documents/VOTable/
+      parameters:
+        - name: sinceTime
+          in: query
+          required: true
+          description: sinceTime is the time that should be used to look for new files in RFC 3339 format.
+          example: 2025-04-12T23:20:50.52Z
+          schema:
+            type: string
+            format: date-time
+        - name: resultType
+          in: query
+          description: The user can request the format of the query result as JSON or an IVOA VOTable
+          schema:
+            type: string
+            default: JSON
+            enum:
+              - JSON
+              - VOTABLE
+      responses:
+        '200':
+          description: The response for a successful discovery query is a list fileItem object
           content:
             application/json:
               schema:
@@ -136,7 +181,36 @@ paths:
           description:
             "Bad Request. Arguments provided were not correct or were incomplete: with explanatory text."
         '404':
-          description: "No file was found with provided fileId."
+          description: "No files was found with provided fileid."
+    delete:
+      tags:
+        - Admin Endpoints
+      description: Delete a single ancillary file.
+      summary: Remove a single engineering ancillary file from the Engineering Database. Caution!
+      operationId: deleteEngAncillaryFile
+      parameters:
+        - in: path
+          name: fileId
+          description: FileId of a previously stored ancillary files for deletion
+          required: true
+          schema:
+            type: string
+            example: a1c6a2ab-4b01-4253-b4c9-70e04b3b48fc
+      responses:
+        '200':
+          description: File is returned and deleted from the store.
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
+              example:
+                "opaque file returned"
+        '400':
+          description:
+            "Bad Request. Arguments provided were not correct or were incomplete: with explanatory text."
+        '404':
+          description: "No files was found with provided fileid."
   /eng/files:
     get:
       tags:

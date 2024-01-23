@@ -26,6 +26,8 @@ servers:
 paths:
   /:
     get:
+      tags:
+        - Basic Search
       parameters:
         - name: RA
           in: query

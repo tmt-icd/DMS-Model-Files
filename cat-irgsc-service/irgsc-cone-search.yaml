@@ -26,6 +26,8 @@ servers:
 paths:
   /:
     get:
+      tags:
+        - Cone Search
       parameters:
         - name: RA
           in: query

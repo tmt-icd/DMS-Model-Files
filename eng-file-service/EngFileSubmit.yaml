@@ -25,21 +25,23 @@ paths:
     post:
       tags:
         - File Submission Endpoints
-      description: "This endpoint allows one engineering ancillary file to
-          be added to the Engineering Database with all required information"
-      summary: "Add one ancillary file to the Engineering Database"
+      description: "This endpoint allows adding one engineering ancillary file to
+          the Engineering Database with all required information."
+      summary: "Add one ancillary file to the Engineering Database."
       operationId: addEngFile
       requestBody:
-        description: required description of file and the file itself in the request body
+        description: Required description of file and the file itself in the request body.
         required: true
         content:
-          application/json:
+          multipart/form-data:
             schema:
+              # will be encoded as JSON
               type: object
               properties:
-                channelName:
+                channel:
                   type: string
-                  description: "The channelName must be unique. It consists of a subsystem and a name"
+                  description: "The full channelName must be unique. It consists of a subsystem and channel. 
+                    The subsystem is provided with the subsystem parameter."
                 subsystem:
                   $ref: '../eng-shared/eng-shared.yaml#/components/schemas/Subsystem'
                 userTime:
@@ -60,11 +62,11 @@ paths:
                   type: string
                   format: binary
               required:
-                - channelName
+                - channel
                 - subsystem
                 - file
             example:
-              channelName: temperatures
+              channel: temperatures
               subsystem: ESEN
               fileName: TopEndTemps-20420608
               tags:
@@ -80,6 +82,16 @@ paths:
             application/json:
               schema: 
                 $ref: '../eng-shared/eng-shared.yaml#/components/schemas/FileItem'
+              example:
+                url: https://dmsinternalstorage/a/b/c/TopEndTemps-20420608
+                timestamp: 2045-04-12T23:20:50.52Z
+                subsystem: ESEN
+                channel: topEndTemps
+                fileName: TopEndTemps-20420608
+                fileId: "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+                tags:
+                  - name: location
+                    value: plusX2
         '400':
           description:
             "Bad Request. Arguments provided were not correct or were incomplete: with explanatory text."

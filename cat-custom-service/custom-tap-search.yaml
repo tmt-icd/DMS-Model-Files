@@ -28,7 +28,7 @@ paths:
     get:
       summary: "IVOA TAP v1.1 get endpoint"
       tags:
-        - TAP
+        - TAP Search
       description: TAP synchronous query endpoint
       parameters:
         - $ref: '#/components/parameters/LangParam'
@@ -55,7 +55,7 @@ paths:
     post:
       summary: "IVOA TAP v1.1 post endpoint"
       tags:
-        - TAP
+        - TAP Search
       description: "TAP synchronous query endpoint."
       parameters:
         - $ref: '#/components/parameters/LangParam'

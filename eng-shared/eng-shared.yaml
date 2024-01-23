@@ -34,6 +34,9 @@ components:
       required:
         - name
         - value
+      example:
+        name: filter
+        value: red
     FileItem:
       type: object
       properties:
@@ -50,6 +53,9 @@ components:
         channelName:
           type: string
           example: topEndTemps
+        fileName:
+          type: string
+          example:
         fileId:
           type: string
           format: uuid
@@ -57,7 +63,7 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/Tag'
-          example: [ name:location value:top-end, name:camera value:blue ]
+          example: [ name:location value:top-endx, name:camera value:blue ]
 
     FileData: #eas
       type: object
@@ -71,16 +77,20 @@ components:
               {
                 url: https://dmsinternalstorage/a/b/c/fileName1,
                 timestamp: 2025-04-12T23:20:50.52Z,
+                checksum: 120EA8A25E5D487BF68B5F7096440019,
                 subsystem: ESEN,
-                channelName: topEndTempss,
+                channel: topEndTemps,
+                fileName: fileName1,
                 fieldId: "3fa85f64-5717-4562-b3fc-2c963f66afa6",
                 tags: [ name:location value:top-end, name:sensorType value:temp ]
               },
               {
                 url: https://dmsinternalstorage/e/f/g/fileName2,
                 timestamp: 2025-04-13T23:20:00.32Z,
+                checksum: CE114E4501D2F4E2DCEA3E17B546F339,
                 subsystem: ESEN,
-                channelName: topEndTempsx,
+                channel: topEndTemps,
+                fileName: fileName2,
                 fieldId: "3fa85f64-5717-4562-c34c-2c963f66ada2",
                 tags: [ name:location value:top-end, name:sensorType value:temp ]
               }
@@ -290,6 +300,7 @@ components:
           - $ref: '#/components/schemas/EngData'
           - $ref: '#/components/schemas/LogData'
           - $ref: '#/components/schemas/FileData'
+
       example:
         [
           {
@@ -297,15 +308,19 @@ components:
               {
                 url: https://dmsinternalstorage/a/b/c/TCSConfig04232036,
                 timestamp: 2037-04-12T23:20:50.52Z,
+                checksum: 120EA8A25E5D487BF68B5F7096440019,
                 subsystem: TCS,
-                channelName: tcsStartupConfig,
+                channel: tcsStartupConfig,
+                fileName: TCSConfig04232036,
                 fieldId: "3fa85f64-5717-4562-b3fc-2c963f66afa6",
               },
               {
                 url: https://dmsinternalstorage/e/f/g/TCSPointing03032937,
                 timestamp: 2037-03-03T20:20:00.32Z,
+                checksum: CE114E4501D2F4E2DCEA3E17B546F339,
                 subsystem: TCS,
-                channelName: mountPointing,
+                channel: mountPointing,
+                fileName: TCSPointing03032937,
                 fieldId: "3fa85f64-5717-4562-c34c-2c963f66ada2",
                 tags: [ name:type value:pointing, name:operator value:jjohnson ]
               }
