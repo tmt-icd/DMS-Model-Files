@@ -18,11 +18,105 @@ components:
       schema:
         type: string
         format: date-time
+    channel:
+      name: channel
+      in: path
+      description: "The channel name is a unique collection of files owned by a subsystem. Channel names should have no spaces. Lower case and hyphens are preferred as in: top-end-temps."
+      required: true
+      example: top-end-temps
+      schema:
+        type: string
+    subsystem:
+      name: subsystem
+      in: path
+      required: true
+      description: The subsystem owning the file. The subsystem value must be within the documented list of subsystems.
+      example: ESEN
+      schema:
+        $ref: '#/components/schemas/Subsystem'
+    tagName:
+      name: tagName
+      in: query
+      style: form
+      explode: false
+      required: false
+      description: Tags can be provided to further filter results of the time-based query.
+        Note that tags and their values must be provided when submitting a file and tags must
+        be defined in the subsystem data specification document. Tag values are defined in tagValue
+        and values must be in the same order as the tagName.
+      schema:
+        type: array
+        items:
+          type: string
+        example:
+          [ location, device ]
+    tagValue:
+      name: tagValue
+      in: query
+      style: form
+      explode: false
+      required: false
+      schema:
+        type: array
+        items:
+          type: string
+      example:
+        [ plusX2, temp ]
+    resultType:
+      name: resultType
+      in: query
+      description: The user can request the format of the query result as JSON or an IVOA VOTable
+      schema:
+        type: string
+        default: JSON
+        enum:
+          - JSON
+          - VOTABLE
+      example:
+        JSON
+    package:
+      name: package
+      in: query
+      description: The type of packaging used when returning the collection of requested files.
+      schema:
+        $ref: '#/components/schemas/PackageType'
+    export:
+      name: export
+      in: query
+      description: An optional parameter that when present and set to true, indicates the results should be returned as a file.
+      schema:
+        type: boolean
+        default: false
+    oneLine:
+      name: oneLine
+      in: query
+      description: An optional parameter that indicates the result logs should be pretty printed with one log item per line.
+      schema:
+        type: boolean
+        default: false
+    objectId:
+      name: objectId
+      in: path
+      description: A unique object identifier for a catalog object.
+      required: true
+      schema:
+        type: string
+      example:
+        IRGSC-10034559
+    fileId:
+        in: path
+        name: fileId
+        description: A unique indentifier for a previously stored engineering ancillary file.
+        required: true
+        schema:
+          type: string
+          example: a1c6a2ab-4b01-4253-b4c9-70e04b3b48fc
   schemas:
-    Subsystem: # fas
+    Subsystem:
       description: name of subsystem
       type: string
-      enum: [ AOESW, APS, CIS, CLN, CRYO, CSW, DMS, DPS, ENC, ESEN, ESW, HNDL, HQ, IRIS, LGSF, M1COAT, M1CS, M1S, M2COAT, M2S, M3S, MODHIS, NFIRAOS, OSS, REFR, SCMS, SER, SOSS, STR, SUM, TCS, TINS, WFOS ]
+      enum:
+        [ AOESW, APS, CIS, CLN, CRYO, CSW, DMS, DPS, ENC, ESEN, ESW, HNDL, HQ, IRIS, LGSF, M1COAT, M1CS, M1S, M2COAT, M2S, M3S, MODHIS, NFIRAOS, OSS, REFR, SCMS, SER, SOSS, STR, SUM, TCS, TINS, WFOS ]
       example: ESEN
     Tag: #fas, fss
       type: object
@@ -35,8 +129,8 @@ components:
         - name
         - value
       example:
-        name: filter
-        value: red
+          name: location
+          value: top-end
     FileItem:
       type: object
       properties:
@@ -50,7 +144,7 @@ components:
           example: 2025-04-12T23:20:50.52Z
         subsystem:
           $ref: '#/components/schemas/Subsystem'
-        channelName:
+        channel:
           type: string
           example: topEndTemps
         fileName:
@@ -80,7 +174,7 @@ components:
                 checksum: 120EA8A25E5D487BF68B5F7096440019,
                 subsystem: ESEN,
                 channel: topEndTemps,
-                fileName: fileName1,
+                fileName: topEndTemps-2025-04-12T23:20:50.52Z,
                 fieldId: "3fa85f64-5717-4562-b3fc-2c963f66afa6",
                 tags: [ name:location value:top-end, name:sensorType value:temp ]
               },
@@ -90,7 +184,7 @@ components:
                 checksum: CE114E4501D2F4E2DCEA3E17B546F339,
                 subsystem: ESEN,
                 channel: topEndTemps,
-                fileName: fileName2,
+                fileName: topEndTemps-2025-04-13T23:20:00.32Z,
                 fieldId: "3fa85f64-5717-4562-c34c-2c963f66ada2",
                 tags: [ name:location value:top-end, name:sensorType value:temp ]
               }
@@ -105,7 +199,7 @@ components:
       type: array
       description: full path of an event parameter including prefix
       items:
-        type: string
+         type: string
       example: tcs.mount.current.az
 
     KeyType:
@@ -421,6 +515,12 @@ components:
             ]
           }
         ]
+
+#   FileContent:
+#      application/octet-stream:
+#        schema:
+#          type: string
+#          format: binary
 
     VOTABLE: #conesearch
       type: object

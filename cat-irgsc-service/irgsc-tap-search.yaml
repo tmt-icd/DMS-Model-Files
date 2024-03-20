@@ -2,26 +2,22 @@ openapi: "3.0.3"
 info:
   title: IVOA TAP Search
   description: |-
-    The Table Access Protocol (TAP) is a web-service protocol that gives access to collections of tabular data referred to collectively as a tableset. 
-    TAP services accept queries posed against the tableset available via the service and return the query response as another table, in accord with the relational model. 
-    Queries may be submitted using various query languages and may execute synchronously or asynchronously. Support for the Astronomical Data Query Language ADQL (Osuna and Ortiz et al., 2008) 
-    is mandatory; support for other query languages is supported but optional.
-    
-    The result of a TAP query is another table, normally returned as a VOTable. Support for VOTable output is mandatory; all other formats are optional.
-    
-    The table collections made accessible via TAP are typically stored in relational database management systems (RDBMS). A TAP service exposes the 
-    database schema to client applications so that queries can be posed directly against arbitrary data tables available via the service.
-    
-    Multi-table operations such as joins or cross matches are possible provided the tables are all managed by the local TAP service, 
-    and provided the service supports these capabilities. Larger scale operations such as a distributed cross match are also possible, 
-    but require combining the results of multiple TAP services.
+    The Table Access Protocol (TAP) defines a service protocol for accessing general table data, including astronomical catalogs 
+    as well as general database tables. Access is provided for both database and table metadata as well as for actual table data. 
+    This version of the protocol includes support for multiple query languages, including queries specified using the Astronomical Data Query Language ADQL 
+    within an integrated interface. It also includes support for both synchronous and asynchronous queries. 
+    Special support is provided for spatially indexed queries using the spatial extensions in ADQL.
+    <p>
+    A multi-position query capability permits queries against an arbitrarily large list of astronomical targets, providing a 
+    simple spatial cross-matching capability. More sophisticated distributed cross-matching capabilities are possible by 
+    orchestrating a distributed query across multiple TAP services.
   version: "1.1"
 externalDocs:
   description: The IVOA TAP Service recommendation document dated September 27, 2019
   url: https://www.ivoa.net/documents/TAP/20190927/REC-TAP-1.1.html
 servers:
   - url: 'https://future_catalog_server/V1/tap'
-    description: This is the server that provides a Cone Search service.
+    description: This is the server that provides catalog search services.
 
 paths:
   /sync:

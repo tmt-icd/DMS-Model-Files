@@ -63,6 +63,7 @@ paths:
                     - PLOT
                     - EXPORT
                     - DISPLAY
+                    - RAW
                   default: DISPLAY
               required:
                 - statement
@@ -71,14 +72,14 @@ paths:
                 value: # fully ad hoc statement
                   statement: "SELECT az,el FROM tcs.demands WHERE time >= '2023-10-29T08:00:00Z' AND time <= '2023-10-29T12:00:00Z'"
                   timeout: 15
-                  output: PLOT
+                  output: RAW
                   database: EVENTS
               example2:
                 value: # canned with parameters
                   statement: "SELECT ?,? FROM ? WHERE time >= '2023-10-29T08:00:00Z' AND time <= '2023-10-29T12:00:00Z'"
                   timeout: 15
                   database: DEMANDS
-                  output: DISPLAY
+                  output: RAW
                   bindings:
                    - field: 1
                      value: alt
@@ -164,12 +165,6 @@ paths:
             * last - the last or newest value in the bin
             * count - the number of values in the bin
 
-        - name: subsystem
-          in: query
-          description: specify subsystem to retrieve all events for a subsystem
-          schema:
-            $ref: '../eng-shared/eng-shared.yaml#/components/schemas/Subsystem'
-          example: TCS
         - name: events
           in: query
           description: list of event parameters that should be used in the query
@@ -190,8 +185,9 @@ paths:
               - PLOT
               - EXPORT
               - DISPLAY
+              - RAW
             default: DISPLAY
-          example: DISPLAY
+          example: RAW
       responses:
         '200':
           description: OK, Events returned with no issues.
@@ -214,25 +210,9 @@ paths:
       parameters:
         - $ref: "../eng-shared/eng-shared.yaml#/components/parameters/startTime"
         - $ref: "../eng-shared/eng-shared.yaml#/components/parameters/endTime"
-        - name: subsystem
-          in: path
-          description: Specify a subsystem to be used to capture all engineering logs.
-          required: true
-          example: APS
-          schema:
-            $ref: '../eng-shared/eng-shared.yaml#/components/schemas/Subsystem'
-        - name: export
-          in: query
-          description: An optional parameter that when present and set to true, indicates the results should be returned as a file.
-          schema:
-            type: boolean
-            default: false
-        - name: oneLine
-          in: query
-          description: An optional parameter that indicates the result logs should be pretty printed with one log item per line
-          schema:
-            type: boolean
-            default: false
+        - $ref: "../eng-shared/eng-shared.yaml#/components/parameters/subsystem"
+        - $ref: "../eng-shared/eng-shared.yaml#/components/parameters/export"
+        - $ref: "../eng-shared/eng-shared.yaml#/components/parameters/oneLine"
       responses:
         '200':
           description: OK, query successful. 
@@ -261,8 +241,9 @@ paths:
         - $ref: "../eng-shared/eng-shared.yaml#/components/parameters/startTime"
         - $ref: "../eng-shared/eng-shared.yaml#/components/parameters/endTime"
         - name: components
-          description: An optional array of component names including prefix.
+          description: One or more component prefix values.
           in: query
+          required: true
           style: form
           explode: false
           example:
@@ -273,18 +254,8 @@ paths:
             type: array
             items:
               type: string
-        - name: export
-          in: query
-          description: An optional parameter that when present and set to true, indicates the results should be returned as a file.
-          schema:
-            type: boolean
-            default: false
-        - name: oneLine
-          in: query
-          description: An optional parameter that indicates the result logs should be pretty printed with one log item per line
-          schema:
-            type: boolean
-            default: false
+        - $ref: "../eng-shared/eng-shared.yaml#/components/parameters/export"
+        - $ref: "../eng-shared/eng-shared.yaml#/components/parameters/oneLine"
       responses:
         '200':
           description: OK, query successful.
@@ -314,13 +285,18 @@ paths:
       parameters:
         - $ref: "../eng-shared/eng-shared.yaml#/components/parameters/startTime"
         - $ref: "../eng-shared/eng-shared.yaml#/components/parameters/endTime"
-        - name: subsystem
-          in: path
-          description: Specify a subsystem to be used to capture all engineering logs.
-          required: true
-          example: APS
+        - $ref: "../eng-shared/eng-shared.yaml#/components/parameters/subsystem"
+        - name: kinds
+          in: query
+          description: "Indicate which type of engineering data is desired: FILES, EVENTS, LOGS, ALL"
+          example: ALL
           schema:
-            $ref: '../eng-shared/eng-shared.yaml#/components/schemas/Subsystem'
+            type: string
+            enum:
+              - FILES
+              - EVENTS
+              - LOGS
+              - ALL
       responses:
         '200':
           description: OK

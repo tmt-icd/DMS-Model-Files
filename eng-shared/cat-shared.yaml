@@ -1,0 +1,18 @@
+components:
+  parameters:
+    catalogIdPath:
+      name: catalogId
+      in: path
+      description: A unique identifier or Id for a single catalog object.
+      required: true
+      schema:
+        type: string
+        example: "C001"
+    objectIdPath:
+      name: objectId
+      in: path
+      description: The identifier or Id of an existing catalog object.
+      required: true
+      schema:
+        type: string
+        example: APS23

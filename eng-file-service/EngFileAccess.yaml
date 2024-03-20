@@ -3,8 +3,8 @@ info:
   version: '0.9'
   title: Engineering Database File Access Service API
   description: >-
-    The Engineering File Access API is HTTP endpoints for discovering ancillary files in the Engineering
-    Database and for retrieving files from the Engineering Database.
+    The Engineering File Access API is HTTP endpoints for discovering and retrieving ancillary files previously 
+    stored in the Engineering Database.
     <p>
     The complete DMS codebase is available on [Github](https://github.com/tmtsoftware/dms).
     <p>
@@ -25,7 +25,7 @@ externalDocs:
   description: "References for time format"
   url: https://datatracker.ietf.org/doc/html/rfc3339
 paths:
-  '/eng/files/search':
+  '/eng/files/search/{subsystem}/{channel}':
     get:
       tags:
         - Discovery Endpoints
@@ -35,67 +35,14 @@ paths:
         Results can be returned as JSON (default) or as an IVOA VOTable. In both cases, the information is the same.
       summary: Discover ancillary files in the Engineering Database
       operationId: searchFiles
-      externalDocs:
-        description: "Reference for IVOA VOTable"
-        url: https://www.ivoa.net/documents/VOTable/
       parameters:
+        - $ref: "../eng-shared/eng-shared.yaml#/components/parameters/subsystem"
+        - $ref: "../eng-shared/eng-shared.yaml#/components/parameters/channel"
         - $ref: "../eng-shared/eng-shared.yaml#/components/parameters/startTime"
         - $ref: "../eng-shared/eng-shared.yaml#/components/parameters/endTime"
-        - name: subsystem
-          in: query
-          required: true
-          description: Specify a subsystem to use to create a unique topic key with the channelName. 
-                 An example topic is APS.apsChannel
-          example: APS
-          schema:
-            $ref: '../eng-shared/eng-shared.yaml#/components/schemas/Subsystem'
-        - name: channel
-          in: query
-          required: true
-          example: apsChannel
-          description: Specify a channel to use to create a unique topic key with the provided subsystem.
-            A complete channelName example is APS.apsChannel
-          schema:
-            type: string
-        - name: resultType
-          in: query
-          description: The user can request the format of the query result as JSON or an IVOA VOTable
-          schema:
-            type: string
-            default: JSON
-            enum:
-              - JSON
-              - VOTABLE
-        - name: tags
-          in: query
-          style: form
-          explode: false
-          required: false
-          schema:
-            type: array
-            description: Tags can be provided to further filter results of the time-based query.
-              Note that tags and their values must be provided when submitting a file and tags must
-              be defined in the subsystem data specification document. Tag values are defined in tagValues
-              and values must be in the same order as the tags.
-            items:
-              type: string
-          example:
-            [location, camera]
-        - name: tagValues
-          in: query
-          style: form
-          explode: false
-          required: false
-          schema:
-            type: array
-            description: Tags can be provided to further filter results of the time-based query.
-              Note that tags and their values must be provided when submitting a file and tags must
-              be defined in the subsystem data specification document. Tag values are defined in tagValues
-              and values must be in the same order as the tags.
-            items:
-              type: string
-            example:
-             [top-end, blue]
+        - $ref: "../eng-shared/eng-shared.yaml#/components/parameters/resultType"
+        - $ref: "../eng-shared/eng-shared.yaml#/components/parameters/tagName"
+        - $ref: "../eng-shared/eng-shared.yaml#/components/parameters/tagValue"
       responses:
         '200':
           description: The response for a successful discovery query is a list fileItem object
@@ -131,15 +78,7 @@ paths:
           schema:
             type: string
             format: date-time
-        - name: resultType
-          in: query
-          description: The user can request the format of the query result as JSON or an IVOA VOTable
-          schema:
-            type: string
-            default: JSON
-            enum:
-              - JSON
-              - VOTABLE
+        - $ref: "../eng-shared/eng-shared.yaml#/components/parameters/resultType"
       responses:
         '200':
           description: The response for a successful discovery query is a list fileItem object
@@ -156,17 +95,11 @@ paths:
     get:
       tags:
         - Retrieval Endpoints
-      description: Retrieve a single ancillary file.
+      description: Retrieve a single ancillary file using its fileId.
       summary: Retrieve a single engineering ancillary file from the Engineering Database
-      operationId: retrieveEngAncillaryFile
+      operationId: retrieveEngAncillaryFileByFileId
       parameters:
-        - in: path
-          name: fileId
-          description: File ID of a previously stored ancillary file to be retrieved
-          required: true
-          schema:
-            type: string
-            example: a1c6a2ab-4b01-4253-b4c9-70e04b3b48fc
+        - $ref: "../eng-shared/eng-shared.yaml#/components/parameters/fileId"
       responses:
         '200':
           description: File is located and returned successfully.
@@ -189,13 +122,7 @@ paths:
       summary: Remove a single engineering ancillary file from the Engineering Database. Caution!
       operationId: deleteEngAncillaryFile
       parameters:
-        - in: path
-          name: fileId
-          description: FileId of a previously stored ancillary files for deletion
-          required: true
-          schema:
-            type: string
-            example: a1c6a2ab-4b01-4253-b4c9-70e04b3b48fc
+        - $ref: "../eng-shared/eng-shared.yaml#/components/parameters/fileId"
       responses:
         '200':
           description: File is returned and deleted from the store.
@@ -205,7 +132,7 @@ paths:
                 type: string
                 format: binary
               example:
-                "opaque file returned"
+                "opaque deleted file returned"
         '400':
           description:
             "Bad Request. Arguments provided were not correct or were incomplete: with explanatory text."
@@ -236,11 +163,7 @@ paths:
           minItems: 1
           items:
             type: string
-      - name: package
-        in: query
-        description: The type of packaging used when returning the collection of requested files.
-        schema:
-          $ref: '../eng-shared/eng-shared.yaml#/components/schemas/PackageType'
+      - $ref: "../eng-shared/eng-shared.yaml#/components/parameters/package"
       responses:
         '200':
           description: All files located and returned successfully in a compressed file. The name of the file
@@ -271,18 +194,8 @@ paths:
       parameters:
         - $ref: "../eng-shared/eng-shared.yaml#/components/parameters/startTime"
         - $ref: "../eng-shared/eng-shared.yaml#/components/parameters/endTime"
-        - name: subsystem
-          in: path
-          required: true
-          description: Specify a subsystem to be used to capture all engineering data.
-          example: APS
-          schema:
-            $ref: '../eng-shared/eng-shared.yaml#/components/schemas/Subsystem'
-        - name: package
-          in: query
-          description: The type of packaging used when returning the set of requested files.
-          schema:
-            $ref: '../eng-shared/eng-shared.yaml#/components/schemas/PackageType'
+        - $ref: "../eng-shared/eng-shared.yaml#/components/parameters/subsystem"
+        - $ref: "../eng-shared/eng-shared.yaml#/components/parameters/package"
       responses:
         '200':
           description: OK

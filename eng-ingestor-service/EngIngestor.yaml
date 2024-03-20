@@ -1,0 +1,114 @@
+openapi: 3.0.3
+info:
+  version: '0.9'
+  title: Engineering Ingestor Service API
+  description: >-
+    The Engineering Ingestor Service API is HTTP endpoints for controlling and monitoring an ENG.DMS Ingestor.
+    An Ingestor is an HTTP-based service with endpoints to pause, resume, and stop an Ingestor
+    as well as to request metrics and information about an executing Ingestor.
+    <p>
+    Ingestors are started by hand or through the ESW Agent Service.
+    <p>
+    The complete DMS codebase is available on [Github](https://github.com/tmtsoftware/dms).
+    <p>
+    The collection of routes listed on this page are HTTP endpoints exposed by TMT Common Software.
+  license:
+    name: Apache 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0.html
+servers:
+  - url: 'https://future_ingestor_server/V1'
+tags:
+  - name: Ingestor Control
+    description: Endpoints for controlling an executing DMS.ENG Ingestor
+  - name: Ingestor Metrics
+    description: Endpionts related to monitoring a specific DMS.ENG Ingestor
+
+paths:
+  /eng/ingestor/pause:
+    get:
+      tags:
+        - Ingestor Control
+      description: This endpoint pauses the collection of events for an executing Event Ingestor. If an ingestor is
+        already paused, the request returns 200.
+      summary: Pause an executing Event Ingestor that is collecting
+      operationId: pause
+      responses:
+        '200':
+          description: OK, Event Ingestor paused.
+        '404':
+          description: The requested service is not available.
+
+  /eng/ingestor/resume:
+    get:
+      tags:
+        - Ingestor Control
+      description: This endpoint resumes the collection of events for an executing Event Ingestor that may be 
+        paused. If the Ingestor is running, the request returns 200.
+      summary: Resume a executing Event Ingestor that is paused
+      operationId: resume
+      responses:
+        '200':
+          description: OK, Event Ingestor resumed.
+        '404':
+          description: The requested service is not available.
+
+  /eng/ingestor/stop:
+    get:
+      tags:
+        - Ingestor Control
+      description: This endpoint causes the executing Ingestor to pause collection, store any buffered
+        events and then shutdown.
+      summary: Stop an executing Event Ingestor
+      operationId: stop
+      responses:
+        '200':
+          description: OK, Event Ingestor stopping.
+        '404':
+          description: The requested service is not available.
+
+  /eng/ingestor/status:
+    get:
+      tags:
+        - Ingestor Metrics
+      description: This endpoint returns a JSON structure of information and metrics for an executing Ingestor.
+      summary: Retrieve status and metrics for an ingestor
+      operationId: status
+      responses:
+        '200':
+          description: OK, Event Ingestor resumed.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  location:
+                    type: string
+                    example: dms.ingestor1
+                  totalCollected:
+                    type: integer
+                    example: 230054
+                  eventsSubscribed:
+                    type: integer
+                    example: 4
+                  state:
+                    type: string
+                    enum:
+                      - PAUSED,
+                      - COLLECTING
+                    example: COLLECTING
+                  subscriptions:
+                    type: array
+                    items:
+                      type: string
+                      example:
+                        TCS.mnt.current,
+                        TCS.mnt.status,
+                        NFIRAOS.ev1,
+                        APS.icd.ev3
+                  time:
+                    type: string
+                    format: date-time
+
+        '404':
+          description: The requested service is not available.
+

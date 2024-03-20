@@ -1,21 +1,21 @@
 openapi: 3.0.3
 info:
-  title: TMT IRGSC Admin API
+  title: TIO GSC Admin API
   description: |-
-    This administration API for the IRGSC or Infrared Guide Star Catalog is a secure API allowing changes 
+    This administration API for the TIO Guide Star Catalog or TIOGSC is a secure API allowing changes 
     to catalog entries. Administrative changes require authentication and the
     authenticated user must be authorized with the DMS.CAT admin role in the 
     token received from the CSW Authorization and Authentication Service. The token must
     be provided in the request header.
   version: 0.9.0
 servers:
-  - url: 'https://future_irgsc_server/V1'
+  - url: 'https://future_tiogsc_server/V1'
 security:
   - catalog_auth:
     - write:objects
 tags:
   - name: Administration
-    description: Administrative changes to an object in the IRGSC catalog collection.
+    description: Administrative changes to an object in the TIOGSC catalog collection.
 paths:
   /admin/include/{objectId}:
     patch:
@@ -26,12 +26,7 @@ paths:
           searches with exclude and added to searches with include.'
       operationId: includeByObjectId
       parameters:
-        - name: objectId
-          in: path
-          description: object id of the catalog object to be modified
-          required: true
-          schema:
-            type: string
+        - $ref: "../eng-shared/eng-shared.yaml#/components/parameters/objectId"
       responses:
         '200':
            description: successful operation
@@ -40,7 +35,7 @@ paths:
                schema:
                  $ref: '#/components/schemas/Object'
                example:
-                 objectId: "IRGSC-10034559"
+                 objectId: "TIOGSC-10034559"
                  searchStatus: true
         '400':
           description: Invalid objectId provided
@@ -61,12 +56,7 @@ paths:
           searches with exclude and added to searches with include.'
       operationId: excludeByObjectId
       parameters:
-        - name: objectId
-          in: path
-          description: object id of the catalog object to be modified
-          required: true
-          schema:
-            type: string
+        - $ref: "../eng-shared/eng-shared.yaml#/components/parameters/objectId"
       responses:
         '200':
           description: successful operation
@@ -75,7 +65,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Object'
               example:
-                objectId: "IRGSC-10034559"
+                objectId: "TIOGSC-10034559"
                 searchStatus: false
         '400':
           description: Invalid objectId provided
@@ -94,7 +84,7 @@ components:
       properties:
         objectId:
           type: string
-          example: "IRGSC-10034559"
+          example: "TIOGSC-10034559"
         searchStatus:
           type: boolean
   securitySchemes:
