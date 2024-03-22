@@ -48,7 +48,7 @@ paths:
           $ref: '#/components/responses/FiveOhThree'
         default:
           $ref: '#/components/responses/DefaultError'
-
+  /aysnc:
     post:
       summary: "IVOA TAP v1.1 post endpoint"
       tags:

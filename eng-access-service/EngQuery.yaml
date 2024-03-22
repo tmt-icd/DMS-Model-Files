@@ -19,7 +19,7 @@ servers:
   - url: 'https://future_eng_query_server/V1'
 tags:
   - name: Engineering Queries
-    description: Endpoints for querying events and logs in Engineering Database.
+    description: This API contains endpoints for querying events, logs, and alarms in Engineering Database.
 externalDocs:
   description: "References for the required time format"
   url: https://datatracker.ietf.org/doc/html/rfc3339
@@ -299,11 +299,14 @@ paths:
               - ALL
       responses:
         '200':
-          description: OK
+          description: Successful operation. A file is returned.
           content:
-            application/json:
+            application/octet-stream:
               schema:
-                $ref: '../eng-shared/eng-shared.yaml#/components/schemas/AnyData'
+                type: string
+                format: binary
+              example:
+                opaque file returned
         '404':
           description: Not Found
 components:

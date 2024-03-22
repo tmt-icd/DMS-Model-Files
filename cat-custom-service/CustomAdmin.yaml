@@ -34,12 +34,14 @@ paths:
         of the new catalog are contained in the request body.'
       operationId: addCatalog
       requestBody:
-        description: User description of the new catalog.
+        description: A new catalog should include a descriptive catalog name as a string, a three letter pattern that will 
+          be used in the object id of all objects (prefix=APS yields APS1, APS2, etc.) And the subsystem owner of the catalog.
+          In order to operate on the catalog, the user must be a member of the subsystem user group in CSW AAS.
         content:
-          application/json:
+          application/x-www-form-urlencoded:
             schema:
               $ref: '#/components/schemas/NewCatalog'
-          application/x-www-form-urlencoded:
+          application/json:
             schema:
               $ref: '#/components/schemas/NewCatalog'
       responses:
@@ -247,6 +249,7 @@ components:
         - owner
       properties:
         catalogName:
+          description: A new catalog should be given a descriptive name as a string.
           type: string
           example: "MyCatalog"
         objectPrefix:

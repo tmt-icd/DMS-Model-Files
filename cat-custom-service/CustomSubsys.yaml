@@ -56,12 +56,12 @@ paths:
       parameters:
         - $ref: "../eng-shared/cat-shared.yaml#/components/parameters/catalogIdPath"
       requestBody:
-        description: Field values for the new object to be added to the catalog
+        description: The body contains the values for each of the fields of the new object.
         content:
-          application/json:
+          application/x-www-form-urlencoded:
             schema:
               $ref: '#/components/schemas/NewObject'
-          application/x-www-form-urlencoded:
+          application/json:
             schema:
               $ref: '#/components/schemas/NewObject'
       responses:
@@ -72,13 +72,13 @@ paths:
               schema:
                 $ref: '#/components/schemas/ExistingObject'
         '400':
-          description: Invalid object description provided, must provide all fields
+          description: Invalid object description provided, must provide all fields.
         '401':
-          description: The request did not contain authentication information
+          description: The request did not contain authentication information.
         '403':
-          description: The client is not authorized for this operation
+          description: The client is not authorized for this operation.
         '404':
-          description: Catalog object with catalogId was not found
+          description: Catalog object with catalogId was not found.
 
   /subsys/{catalogId}/{objectId}:
     get:
@@ -92,17 +92,17 @@ paths:
         - $ref: "../eng-shared/cat-shared.yaml#/components/parameters/objectIdPath"
       responses:
         '200':
-          description: successful operation
+          description: Successful operation. Search status updated.
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ExistingObject'
         '401':
-          description: The request did not contain authentication information
+          description: The request did not contain authentication information.
         '403':
-          description: The client is not authorized for this operation
+          description: The client is not authorized for this operation.
         '404':
-          description: Catalog with catalogId or object with objectId was not found
+          description: Catalog with catalogId or object with objectId was not found.
 
     patch:
       tags:
@@ -140,7 +140,7 @@ paths:
                   fieldValue: -5.32
       responses:
         '200':
-          description: successful operation
+          description: Successful operation. Search status updated.
           content:
             application/json:
               schema:
@@ -193,6 +193,9 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ExistingObject'
+              examples:
+                trueObject:
+                  $ref: '#/components/examples/trueObject'
         '400':
           description: Invalid objectId provided
         '404':
@@ -218,6 +221,10 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ExistingObject'
+              examples:
+                falseObject:
+                  $ref: '#/components/examples/falseObject'
+
         '400':
           description: Invalid objectId provided
         '404':
@@ -225,6 +232,41 @@ paths:
         '405':
           description: Invalid input or authorization
 components:
+  examples:
+    trueObject:
+      value:
+        objectId: "APS23"
+        catalogId: "C012"
+        objectName: "My Object"
+        RA_Deg: 140.23
+        Dec_Deg: -22.345
+        RA: [ 14, 23, 15.43 ]
+        DEC: [ -39, 23, 44.217 ]
+        searchStatus: true
+        custom:
+          - fieldName: J_Mag
+            fieldValue: 21.2
+          - fieldName: K_Mag
+            fieldValue: 5.3
+          - fieldName: Valid
+            fieldValue: true
+    falseObject:
+      value:
+        objectId: "APS23"
+        catalogId: "C012"
+        objectName: "My Object"
+        RA_Deg: 140.23
+        Dec_Deg: -22.345
+        RA: [ 14, 23, 15.43 ]
+        DEC: [ -39, 23, 44.217 ]
+        searchStatus: false
+        custom:
+          - fieldName: J_Mag
+            fieldValue: 21.2
+          - fieldName: K_Mag
+            fieldValue: 5.3
+          - fieldName: Valid
+            fieldValue: true
   schemas:
     NewObject:
       type: object
@@ -236,14 +278,18 @@ components:
       properties:
         objectName:
           type: string
+          description: A new object should have a name given as a short string.
           example: "My Object"
         RA_Deg:
           type: number
+          description: The right ascension of the object is specified in degrees as a floating point number.
           example: 140.23
         Dec_Deg:
           type: number
+          description: The declination of the object is specified in degrees as a floating point number.
           example: -22.345
         custom:
+          description: "Custom fields are provided in an array of field: value pairs."
           type: array
           items:
             $ref: '#/components/schemas/Field'
@@ -263,21 +309,16 @@ components:
       properties:
         objectId:
           type: string
-          example: "APS23"
         catalogId:
           type: string
-          example: "C012"
         objectName:
           type: string
-          example: "My Object"
           default: "New Object"
         RA_Deg:
           type: number
-          example: 140.23
           default: 0.0
         Dec_Deg:
           type: number
-          example: -22.345
           default: 0.0
         RA:
           type: array
@@ -287,7 +328,6 @@ components:
             type: number
             minItems: 3
             maxItems: 3
-          example: [ 14, 23, 15.43 ]
         DEC:
           type: array
           items:
@@ -296,7 +336,6 @@ components:
             type: number
             minItems: 3
             maxItems: 3
-          example: [ -39, 23, 44.217 ]
         searchStatus:
           type: boolean
           default: true
@@ -304,13 +343,6 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/Field'
-          example:
-            - fieldName: J_Mag
-              fieldValue: 21.2
-            - fieldName: K_Mag
-              fieldValue: 5.3
-            - fieldName: Valid
-              fieldValue: true
     Field:
       type: object
       required:
