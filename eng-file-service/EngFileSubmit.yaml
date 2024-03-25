@@ -1,0 +1,72 @@
+openapi: 3.0.3
+info:
+  version: '0.9'
+  title: File Submission Service API Endpoints
+  description: >-
+    The Engineering File Submission API is HTTP endpoints for submitting
+    an ancillary file to the DMS Engineering Database.
+    <p>
+    Complete codebase is available on [Github](https://github.com/tmtsoftware/dms).
+    <p>
+    The collection of routes listed on this page are HTTP end points exposed by TMT Common Software.
+  license:
+    name: Apache 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0.html
+servers:
+  - url: 'https://future_eng_file_server/V1'
+tags:
+  - name: File Submission Endpoints
+    description: Endpoints for adding a file to the Engineering Database.
+externalDocs:
+  description: "References for time format"
+  url: https://datatracker.ietf.org/doc/html/rfc3339
+paths:
+  '/eng/file/{subsystem}/{channel}':
+    post:
+      tags:
+        - File Submission Endpoints
+      description: "This endpoint allows adding one engineering ancillary file to
+          the Engineering Database with all required and optional information. The name of the file is added by
+          the service and returned in the result."
+      summary: "Add one ancillary file to the Engineering Database."
+      operationId: addEngFile
+      parameters:
+        - $ref: "../eng-shared/eng-shared.yaml#/components/parameters/subsystem"
+        - $ref: "../eng-shared/eng-shared.yaml#/components/parameters/channel"
+        - name: userTime
+          in: query
+          description: "This is an optional time that can be provided if the default time is not correct.
+                                          By default, the time used is the time when the file is submitted. Times
+                                          follow ISO-8601 format - yyyy-MM-ddTHH:mm:ssZ. Z is Zulu=UTC."
+          example: 2025-04-12T23:20:50.52Z
+          schema:
+            type: string
+            format: date-time
+        - $ref: "../eng-shared/eng-shared.yaml#/components/parameters/tagName"
+        - $ref: "../eng-shared/eng-shared.yaml#/components/parameters/tagValue"
+
+      responses: 
+        '201':
+          description: The submitted file is successfully added. A description of the added file including its fileId is returned as JSON.
+          content:
+            application/json:
+              schema: 
+                $ref: '../eng-shared/eng-shared.yaml#/components/schemas/FileItem'
+              example:
+                url: https://dmsinternalstorage/a/b/c/top-end-temps-20450412:20:50:52
+                timestamp: 2045-04-12T23:20:50.52Z
+                subsystem: ESEN
+                channel: top-end-temps
+                fileName: top-end-temps-20450412:20:50:52
+                fileId: "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+                tags:
+                  - name: location
+                    value: plusX2
+                  - name: device
+                    value: temp
+        '401':
+          description:
+            "Bad Request. The caller is not authorized for this operation."
+        '500':
+          description:
+            "Bad Request. Arguments provided were not correct or were incomplete: with explanatory text."

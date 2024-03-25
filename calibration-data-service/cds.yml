@@ -1,20 +1,20 @@
 openapi: 3.0.0
 info:
   version: '1.0'
-  title: TMT Data Managment System REST Endpoints
+  title: TMT Data Management System REST Endpoints
   description: >-
-    The Calibration Data Service (CDS) is an HTTP service that indentifies and returns the location of calibration files suitable for reduction.
+    The Calibration Data Service (CDS) is an HTTP service that identifies and returns the location of calibration files suitable for reduction.
 
-    Visit [TMT Website](http://www.tmt.org) for more information.
+    Visit [TMT Website](https://www.tmt.org) for more information.
 
     Complete codebase is available on [Github](https://github.com/tmtsoftware/dms).
 
-    Collection of routes listed on this page are http end points exposed by TMT common software.
+    The collection of routes listed on this page are HTTP endpoints exposed by TMT Common Software.
   x-logo:
     url: tmt.png
   license:
     name: Apache 2.0
-    url: http://www.apache.org/licenses/LICENSE-2.0.html
+    url: https://www.apache.org/licenses/LICENSE-2.0.html
 
 paths:
   '/calibration/search':
@@ -27,9 +27,7 @@ paths:
       parameters:
         - $ref: '../shared.yml#/components/parameters/originalFilename'
         - $ref: '../shared.yml#/components/parameters/calibrationType'
-        - $ref: '../shared.yml#/components/parameters/startDate'
         - $ref: '../shared.yml#/components/parameters/startTime'
-        - $ref: '../shared.yml#/components/parameters/endDate'
         - $ref: '../shared.yml#/components/parameters/endTime'
         - $ref: '../shared.yml#/components/parameters/instrument'
         - $ref: '../shared.yml#/components/parameters/channel'

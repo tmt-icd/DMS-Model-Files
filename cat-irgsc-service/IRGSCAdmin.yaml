@@ -1,0 +1,98 @@
+openapi: 3.0.3
+info:
+  title: TIO GSC Admin API
+  description: |-
+    This administration API for the TIO Guide Star Catalog or TIOGSC is a secure API allowing changes 
+    to catalog entries. Administrative changes require authentication and the
+    authenticated user must be authorized with the DMS.CAT admin role in the 
+    token received from the CSW Authorization and Authentication Service. The token must
+    be provided in the request header.
+  version: 0.9.0
+servers:
+  - url: 'https://future_tiogsc_server/V1'
+security:
+  - catalog_auth:
+    - write:objects
+tags:
+  - name: Administration
+    description: Administrative changes to an object in the TIOGSC catalog collection.
+paths:
+  /admin/include/{objectId}:
+    patch:
+      tags:
+        - Administration
+      summary: Include the object in searches
+      description: 'By default all objects are included in searches. An object can be removed from
+          searches with exclude and added to searches with include.'
+      operationId: includeByObjectId
+      parameters:
+        - $ref: "../eng-shared/eng-shared.yaml#/components/parameters/objectId"
+      responses:
+        '200':
+           description: successful operation
+           content:
+             application/json:
+               schema:
+                 $ref: '#/components/schemas/Object'
+               example:
+                 objectId: "TIOGSC-10034559"
+                 searchStatus: true
+        '400':
+          description: Invalid objectId provided
+        '404':
+          description: Catalog object was not found
+        '405':
+          description: Invalid input or authorization
+      security:
+        - catalog_admin:
+          - write:objects
+          - read:objects
+  /admin/exclude/{objectId}:
+    patch:
+      tags:
+        - Administration
+      summary: Exclude the object from searches
+      description: 'By default all objects are included in searches. An object can be removed from
+          searches with exclude and added to searches with include.'
+      operationId: excludeByObjectId
+      parameters:
+        - $ref: "../eng-shared/eng-shared.yaml#/components/parameters/objectId"
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Object'
+              example:
+                objectId: "TIOGSC-10034559"
+                searchStatus: false
+        '400':
+          description: Invalid objectId provided
+        '404':
+          description: Catalog object was not found
+        '405':
+          description: Invalid input or authorization
+      security:
+        - catalog_admin:
+          - write:objects
+          - read:objects
+components:
+  schemas:
+    Object:
+      type: object
+      properties:
+        objectId:
+          type: string
+          example: "TIOGSC-10034559"
+        searchStatus:
+          type: boolean
+  securitySchemes:
+    catalog_auth:
+      type: "oauth2"
+      flows:
+        authorizationCode:
+          authorizationUrl: https://cswauthauthservice.tmt.org/oauth/dialog
+          tokenUrl: https://cswauthauthservice.tmt.org/oauth
+          scopes:
+            write:objects: Grants ability to update objects

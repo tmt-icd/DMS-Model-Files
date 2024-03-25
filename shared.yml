@@ -1,4 +1,3 @@
-openapi: 3.0.0
 servers:
   - url: http://localhost:4000/
 components:
@@ -8,67 +7,33 @@ components:
         Represents Access token that applications use to make API requests on behalf of a user.
         The access token represents the authorization of a specific application to access specific parts of a user’s data.
         Config service admin API requires you to provide this access token in header.
-        To know more on how to authenticate and authorize yourself and get access token, refer this http://tmtsoftware.github.io/csw/services/aas.html
+        To know more on how to authenticate and authorize yourself and get access token, refer this https://tmtsoftware.github.io/csw/services/aas.html
       type: apiKey
       name: Authorization
       in: header
   parameters:
-    startDate:
-      name: startDate #cds
-      in: query
-      description: time range start date
-      schema:
-        type: string
-    startTime: #cds, sdas
+    startTime: # fas  cds, sdas
       name: startTime
       in: query
-      description: time range start time
+      required: false
+      description: All queries include a time range. startTime is the oldest time in RFC 3339 format.
       schema:
         type: string
-    endDate: #cds, sdas
-      name: endDate
-      in: query
-      description: time range end date
-      schema:
-        type: string
-    endTime: #cds, sdas
+        format: date-time
+        example: 2025-04-12T23:20:50.52Z
+    endTime: # fas  cds, sdas
       name: endTime
       in: query
-      description: time range end time
+      required: false
+      description: All queries include a time range. endTime is the most recent time in RFC 3339 format.
       schema:
         type: string
-    startDateReq: #eas
-      name: startDate
-      in: query
-      description: time range start date
-      required: true
-      schema:
-        type: string
-    startTimeReq: #eas
-      name: startTime
-      in: query
-      description: time range start time
-      required: true
-      schema:
-        type: string
-    endDateReq: #eas
-      name: endDate
-      in: query
-      description: time range end date
-      schema:
-        type: string
-      required: true
-    endTimeReq: #eas
-      name: endTime
-      in: query
-      description: time range end time
-      required: true
-      schema:
-        type: string
+        format: date-time
+        example: 2025-04-12T23:20:48.00Z
     originalFilename: #cds
       name: originalFilename
       in: query
-      description: filename of file when submitting to DMS
+      description: filename of file when submitted to DMS
       schema:
         type: string
     programId: #sdas
@@ -190,6 +155,7 @@ components:
   schemas:
     ExposureId: #cds, mas, sdss, sdas
       type: string
+      example: "2022A-P123-O044-IRIS-IMG-DRK-0023-00"
     ObserveEvent: #mas
       type: string
     HeaderItem: 
@@ -220,7 +186,7 @@ components:
       enum: [AOESW, APS, CIS, CLN, CRYO, CSW, DMS, DPS, ENC, ESEN, ESW, HNDL, HQ, IRIS, LGSF, M1COAT, M1CS, M1S, M2COAT, M2S, M3S, MODHIS, NFIRAOS, OSS, REFR, SCMS, SER, SOSS, STR, SUM, TCS, TINS, WFOS]
     ResampleMethod: #eas
       type: string
-      enum: [interp, nearest, past, binned]
+      enum: [interp, last, aggregate]
     EventType:
       description: type of event
       type: string
@@ -241,13 +207,15 @@ components:
       description: type of packing for multiple files
       type: string
       enum: [tar, zip, gzip]
+      default: zip
     CompressionType: #sdas
       description: type of compression
       type: string
       enum: [gzip, fpack]
     EventKey: #eas, mas
       type: string
-      description: name of event including prefix
+      description: name of event parameter including prefix
+      example: tcs.mount.current.az,tcs.mount.current.el
     Tag: #eas, fss, sdas
       type: object
       properties:
@@ -265,7 +233,7 @@ components:
         name:
           type: string
           description: name of parameter
-        index: 
+        index:
           type: integer
           minimum: 0
     ParameterValue:
@@ -282,7 +250,7 @@ components:
     ItemValue:
       type: object
       properties:
-        value: 
+        value:
           { }
         timestamp:
           type: string
@@ -296,7 +264,7 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/ParameterValue'
-    EngData: #eas, mas
+    EngData: #mas
       allOf: 
       - $ref: '#/components/schemas/DataResponse'
       - type: object
@@ -305,108 +273,7 @@ components:
             type: array
             items:
               $ref: '#/components/schemas/EventData'
-    SimpleLogData: #eas
-      type: string
-      example: "[INFO] Attempting to find connection (LocationServiceExampleClientApp.scala 131)\n[DEBUG] Trying HTTP connection (LocationServiceExampleClientApp.scala 134)"
-    LogItem:
-      type: object
-      properties:
-        "@prefix": 
-          type: string
-        "@subsystem":
-          $ref: '#/components/schemas/Subsystem'
-        "@componentName":
-          type: string
-        "@host": 
-          type: string
-        "@name":
-          type: string
-        "@severity": 
-          type: string
-        "@version": 
-          type: number
-        actor: 
-          type: string
-        class: 
-          type: string
-        file: 
-          type: string
-        line: 
-          type: integer
-        message: 
-          type: string
-        timestamp:
-          type: string
-    LogData: #eas 
-      allOf: 
-      - $ref: '#/components/schemas/DataResponse'
-      - type: object
-        properties:
-          messages:
-            type: array
-            items: 
-              $ref: '#/components/schemas/LogItem'
-            example: 
-              - "@prefix": "ESW.my-component-name"
-                "@subsystem": "ESW"
-                "@componentName": "my-component-name"
-                "@host": "tmthost.local"
-                "@name": "LocationServiceExampleClient"
-                "@severity": "INFO"
-                "@version": "0.1"
-                actor: "akka://csw-examples-locationServiceClient@10.131.23.195:53618/user/$a"
-                class: "csw.location.LocationServiceExampleClient"
-                file: "LocationServiceExampleClientApp.scala"
-                line: 149
-                message: "Sending query to service: ping"
-                timestamp: "2017-11-30T10:58:03.102Z"
-              - "@prefix": "ESW.my-second-component"
-                "@subsystem": "ESW"
-                "@componentName": "my-second-component"
-                "@host": "tmthost2.local"
-                "@name": "LocationServiceExampleServer"
-                "@severity": "DEBUG"
-                "@version": "0.2"
-                actor: "akka://csw-examples-locationServiceClien2@10.131.23.196:53618/user/$a"
-                class: "csw.location.LocationServiceExampleClient"
-                file: "LocationServiceExampleServiceApp.scala"
-                line: 243
-                message: "Sending response: pong"
-                timestamp: "2017-11-30T10:58:03.112Z"
-              
-    FileItem:
-      type: object
-      properties:
-        uri: 
-          type: string
-        timestamp:
-          type: string
-        subsystem:
-          $ref: '#/components/schemas/Subsystem'
-        channelName:
-          type: string
-        tags:
-          type: array
-          items: 
-            $ref: '#/components/schemas/Tag'
-    FileData: #eas
-      allOf: 
-      - $ref: '#/components/schemas/DataResponse'
-      - type: object
-        properties:
-          files: 
-            type: array
-            items:
-              $ref: '#/components/schemas/FileItem'
-    AnyData: #eas
-      type: array
-      items:
-        anyOf:
-          - $ref: '#/components/schemas/EngData'
-          - $ref: '#/components/schemas/LogData'
-          - $ref: '#/components/schemas/FileData'
-        discriminator: 
-          propertyName: dataResponseType
+
     ScienceSearchResultItem: #sdas
       type: object
       properties: 
@@ -451,7 +318,7 @@ components:
             attribute: true
         xmlns:
           type: string
-          example: http://www.ivoa.net/xml/VOTable/v1.3
+          example: https://www.ivoa.net/xml/VOTable/v1.3
           xml:
             attribute: true
         RESOURCE: 
@@ -627,5 +494,4 @@ components:
                         - ["287.43","-63.85","N 6744","839","6","10.4"]
                         - ["023.48","+30.66","N 598","-182","3","0.7"]
 
-                      
-                      
+

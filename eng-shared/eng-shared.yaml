@@ -1,0 +1,711 @@
+components:
+  parameters:
+    startTime: # fas
+      name: startTime
+      in: query
+      required: true
+      description: All queries include a time range. startTime is the oldest time in RFC 3339 format.
+      example: 2025-04-12T23:20:40.52Z
+      schema:
+        type: string
+        format: date-time
+    endTime: # fas
+      name: endTime
+      in: query
+      required: true
+      description: All queries include a time range. endTime is the most recent time in RFC 3339 format.
+      example: 2025-04-12T23:20:48.00Z
+      schema:
+        type: string
+        format: date-time
+    channel:
+      name: channel
+      in: path
+      description: "The channel name is a unique collection of files owned by a subsystem. Channel names should have no spaces. Lower case and hyphens are preferred as in: top-end-temps."
+      required: true
+      example: top-end-temps
+      schema:
+        type: string
+    subsystem:
+      name: subsystem
+      in: path
+      required: true
+      description: The subsystem owning the file. The subsystem value must be within the documented list of subsystems.
+      example: ESEN
+      schema:
+        $ref: '#/components/schemas/Subsystem'
+    tagName:
+      name: tagName
+      in: query
+      style: form
+      explode: false
+      required: false
+      description: Tags can be provided to further filter results of the time-based query.
+        Note that tags and their values must be provided when submitting a file and tags must
+        be defined in the subsystem data specification document. Tag values are defined in tagValue
+        and values must be in the same order as the tagName.
+      schema:
+        type: array
+        items:
+          type: string
+        example:
+          [ location, device ]
+    tagValue:
+      name: tagValue
+      in: query
+      style: form
+      explode: false
+      required: false
+      schema:
+        type: array
+        items:
+          type: string
+      example:
+        [ plusX2, temp ]
+    resultType:
+      name: resultType
+      in: query
+      description: The user can request the format of the query result as JSON or an IVOA VOTable
+      schema:
+        type: string
+        default: JSON
+        enum:
+          - JSON
+          - VOTABLE
+      example:
+        JSON
+    package:
+      name: package
+      in: query
+      description: The type of packaging used when returning the collection of requested files.
+      schema:
+        $ref: '#/components/schemas/PackageType'
+    export:
+      name: export
+      in: query
+      description: An optional parameter that when present and set to true, indicates the results should be returned as a file.
+      schema:
+        type: boolean
+        default: false
+    oneLine:
+      name: oneLine
+      in: query
+      description: An optional parameter that indicates the result logs should be pretty printed with one log item per line.
+      schema:
+        type: boolean
+        default: false
+    objectId:
+      name: objectId
+      in: path
+      description: A unique object identifier for a catalog object.
+      required: true
+      schema:
+        type: string
+      example:
+        IRGSC-10034559
+    fileId:
+        in: path
+        name: fileId
+        description: A unique indentifier for a previously stored engineering ancillary file.
+        required: true
+        schema:
+          type: string
+          example: a1c6a2ab-4b01-4253-b4c9-70e04b3b48fc
+  schemas:
+    Subsystem:
+      description: name of subsystem
+      type: string
+      enum:
+        [ AOESW, APS, CIS, CLN, CRYO, CSW, DMS, DPS, ENC, ESEN, ESW, HNDL, HQ, IRIS, LGSF, M1COAT, M1CS, M1S, M2COAT, M2S, M3S, MODHIS, NFIRAOS, OSS, REFR, SCMS, SER, SOSS, STR, SUM, TCS, TINS, WFOS ]
+      example: ESEN
+    Tag: #fas, fss
+      type: object
+      properties:
+        name:
+          type: string
+        value:
+          type: string
+      required:
+        - name
+        - value
+      example:
+          name: location
+          value: top-end
+    FileItem:
+      type: object
+      properties:
+        url:
+          type: string
+          format: url
+          example: https://dmsinternalstorage/a/b/c/fileId
+        timestamp:
+          type: string
+          format: date-time
+          example: 2025-04-12T23:20:50.52Z
+        subsystem:
+          $ref: '#/components/schemas/Subsystem'
+        channel:
+          type: string
+          example: topEndTemps
+        fileName:
+          type: string
+          example:
+        fileId:
+          type: string
+          format: uuid
+        tags:
+          type: array
+          items:
+            $ref: '#/components/schemas/Tag'
+          example: [ name:location value:top-endx, name:camera value:blue ]
+
+    FileData: #eas
+      type: object
+      properties:
+        files:
+          type: array
+          items:
+            $ref: '#/components/schemas/FileItem'
+          example: # dataType: Files,
+            [
+              {
+                url: https://dmsinternalstorage/a/b/c/fileName1,
+                timestamp: 2025-04-12T23:20:50.52Z,
+                checksum: 120EA8A25E5D487BF68B5F7096440019,
+                subsystem: ESEN,
+                channel: topEndTemps,
+                fileName: topEndTemps-2025-04-12T23:20:50.52Z,
+                fieldId: "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+                tags: [ name:location value:top-end, name:sensorType value:temp ]
+              },
+              {
+                url: https://dmsinternalstorage/e/f/g/fileName2,
+                timestamp: 2025-04-13T23:20:00.32Z,
+                checksum: CE114E4501D2F4E2DCEA3E17B546F339,
+                subsystem: ESEN,
+                channel: topEndTemps,
+                fileName: topEndTemps-2025-04-13T23:20:00.32Z,
+                fieldId: "3fa85f64-5717-4562-c34c-2c963f66ada2",
+                tags: [ name:location value:top-end, name:sensorType value:temp ]
+              }
+            ]
+    PackageType: #eas
+      description: file format for packaging and compressing multiple files
+      type: string
+      enum: [ tar, zip, gzip ]
+      default: gzip
+
+    ParameterPath: #equsery
+      type: array
+      description: full path of an event parameter including prefix
+      items:
+         type: string
+      example: tcs.mount.current.az
+
+    KeyType:
+      description: CSW type of event
+      type: string
+      enum: [ BooleanKey, CharKey, ByteKey, ShortKey, LongKey, IntKey, FloatKey, DoubleKey, StringKey, UTCTimeKey, TAITimeKey ]
+
+    IntegerValue:
+      type: object
+      properties:
+        values:
+          type: array
+          items:
+            type: integer
+    NumberValue:
+      type: object
+      properties:
+        values:
+          type: array
+          items:
+            type: number
+    StringValue:
+      type: object
+      properties:
+        values:
+          type: array
+          items:
+            type: string
+    BooleanValue:
+      type: object
+      properties:
+        values:
+          type: array
+          items:
+            type: boolean
+    Parameter:
+      type: object
+      properties:
+        keyType:
+          $ref: '#/components/schemas/KeyType'
+        keyName:
+          type: string
+        units:
+          type: string
+        values:
+          oneOf:
+            - $ref: '#/components/schemas/IntegerValue'
+            - $ref: '#/components/schemas/NumberValue'
+            - $ref: '#/components/schemas/StringValue'
+            - $ref: '#/components/schemas/BooleanValue'
+    Event:
+      description: returned engineering event data
+      type: object
+      properties:
+        _type:
+          type: string
+          enum: [ SystemEvent, ObserveEvent ]
+        eventId:
+          type: string
+          format: uuid
+        source:
+          type: string
+        eventName:
+          type: string
+        eventTime:
+          type: string
+          format: date-time
+        paramSet:
+          type: array
+          items:
+            $ref: '#/components/schemas/Parameter'
+
+    EngData: #eas
+      type: object
+      properties:
+        events:
+          type: array
+          items:
+            $ref: '#/components/schemas/Event'
+          example:
+            [
+              {
+                _type: SystemEvent,
+                eventId: 3fa85f64-5717-4562-c34c-2c963f66ada2,
+                source: TCS.mount,
+                eventName: current,
+                eventTime: 2045-04-13T23:20:00.32Z,
+                paramSet:
+                  [
+                    {
+                      keyType: DoubleKey,
+                      keyName: az,
+                      values: [ 123.456 ],
+                      units: degrees
+                    },
+                    {
+                      keyType: IntKey,
+                      keyName: z,
+                      values: [ 45 ],
+                      units: degrees
+                    },
+                    {
+                      keyType: BooleanKey,
+                      keyName: inPosition,
+                      values: [ true ],
+                      units: NoUnits
+                    }
+                  ]
+              }
+            ]
+
+    OneLineLogData: #eqs
+      type: string
+      example: "[INFO] 2045-04-13T23:20:00.32Z: Attempting to find connection (LocationServiceExampleClientApp.scala 131)\n[DEBUG] Trying HTTP connection (LocationServiceExampleClientApp.scala 134)"
+
+    LogItem:
+      type: object
+      properties:
+        "@prefix":
+          type: string
+        "@subsystem":
+          $ref: '#/components/schemas/Subsystem'
+        "@componentName":
+          type: string
+        "@host":
+          type: string
+        "@name":
+          type: string
+        "@severity":
+          type: string
+        "@version":
+          type: number
+        actor:
+          type: string
+        class:
+          type: string
+        file:
+          type: string
+        line:
+          type: integer
+        message:
+          type: string
+        timestamp:
+          type: date-time
+    LogData: #eas
+      type: object
+      properties:
+        logs:
+          type: array
+          items:
+            $ref: '#/components/schemas/LogItem'
+          example:
+            # Can't get reuse of examples to work
+            [
+              {
+                "@prefix": "ESW.my-component-name",
+                "@subsystem": "ESW",
+                "@componentName": "my-component-name",
+                "@host": "tmthost.local",
+                "@name": "LocationServiceExampleClient",
+                "@severity": "INFO",
+                "@version": "0.1",
+                actor: "akka://csw-examples-locationServiceClient@10.131.23.195:53618/user/$a",
+                class: "csw.location.LocationServiceExampleClient",
+                file: "LocationServiceExampleClientApp.scala",
+                line: 149,
+                message: "Sending query to service: ping",
+                timestamp: "2017-11-30T10:58:03.102Z"
+              },
+              {
+                "@prefix": "ESW.my-second-component",
+                "@subsystem": "ESW",
+                "@componentName": "my-second-component",
+                "@host": "tmthost2.local",
+                "@name": "LocationServiceExampleServer",
+                "@severity": "DEBUG",
+                "@version": "0.2",
+                actor: "akka://csw-examples-locationServiceClien2@10.131.23.196:53618/user/$a",
+                class: "csw.location.LocationServiceExampleClient",
+                file: "LocationServiceExampleServiceApp.scala",
+                line: 243,
+                message: "Sending response: pong",
+                timestamp: "2017-11-30T10:58:03.112Z"
+              }
+            ]
+
+
+    AnyData: #eas
+      type: array
+      items:
+        anyOf:
+          - $ref: '#/components/schemas/EngData'
+          - $ref: '#/components/schemas/LogData'
+          - $ref: '#/components/schemas/FileData'
+
+      example:
+        [
+          {
+            "files": [
+              {
+                url: https://dmsinternalstorage/a/b/c/TCSConfig04232036,
+                timestamp: 2037-04-12T23:20:50.52Z,
+                checksum: 120EA8A25E5D487BF68B5F7096440019,
+                subsystem: TCS,
+                channel: tcsStartupConfig,
+                fileName: TCSConfig04232036,
+                fieldId: "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+              },
+              {
+                url: https://dmsinternalstorage/e/f/g/TCSPointing03032937,
+                timestamp: 2037-03-03T20:20:00.32Z,
+                checksum: CE114E4501D2F4E2DCEA3E17B546F339,
+                subsystem: TCS,
+                channel: mountPointing,
+                fileName: TCSPointing03032937,
+                fieldId: "3fa85f64-5717-4562-c34c-2c963f66ada2",
+                tags: [ name:type value:pointing, name:operator value:jjohnson ]
+              }
+            ]
+          },
+          {
+            logs: [
+              {
+                "@prefix": "TCS.mount",
+                "@subsystem": "TCS",
+                "@componentName": "mountAssembly",
+                "@host": "tmthost2.local",
+                "@name": "mount",
+                "@severity": "DEBUG",
+                "@version": "0.2",
+                actor: "akka://mountAssemblyAndHCD@10.131.23.196:53618/user/$a",
+                class: "tcs.mountAssemblyMain",
+                file: "mountAssemblyMain.scala",
+                line: 243,
+                message: "New target config started",
+                timestamp: "2037-11-30T10:58:03.112Z"
+              },
+              {
+                "@prefix": "TCS.mount",
+                "@subsystem": "TCS",
+                "@componentName": "mountHCD",
+                "@host": "tmthost2.local",
+                "@name": "mountHCD",
+                "@severity": "INFO",
+                "@version": "0.2",
+                actor: "akka://mountAssemblyAndHCD@10.131.23.195:53618/user/$a",
+                class: "tcsHCDWorker1",
+                file: "tcsHCDMain.scala",
+                line: 149,
+                message: "Sending config to MELCO",
+                timestamp: "2037-11-30T10:58:03.303Z"
+              },
+            ]
+          },
+          {
+            events: [
+              {
+                _type: SystemEvent,
+                eventId: 3fa85f64-5717-4562-c34c-2c963f66ada2,
+                source: TCS.mount,
+                eventName: current,
+                eventTime: 2037-11-30T10:58:00.32Z,
+                paramSet:
+                  [
+                    {
+                      keyType: DoubleKey,
+                      keyName: az,
+                      values: [ 123.456 ],
+                      units: degrees
+                    },
+                    {
+                      keyType: DoubleKey,
+                      keyName: z,
+                      values: [ 45.0 ],
+                      units: degrees
+                    },
+                    {
+                      keyType: BooleanKey,
+                      keyName: inPosition,
+                      values: [ true ],
+                      units: NoUnits
+                    }
+                  ]
+              },
+              {
+                _type: SystemEvent,
+                eventId: 3fa85f64-5717-4562-c34c-2c9633fd2da2,
+                source: TCS.mount,
+                eventName: current,
+                eventTime: 2037-11-30T10:58:00.333Z,
+                paramSet:
+                  [
+                    {
+                      keyType: DoubleKey,
+                      keyName: az,
+                      values: [ 123.602 ],
+                      units: degrees
+                    },
+                    {
+                      keyType: DoubleKey,
+                      keyName: z,
+                      values: [ 45.1 ],
+                      units: degrees
+                    },
+                    {
+                      keyType: BooleanKey,
+                      keyName: inPosition,
+                      values: [ true ],
+                      units: NoUnits
+                    }
+                  ]
+              }
+            ]
+          }
+        ]
+
+#   FileContent:
+#      application/octet-stream:
+#        schema:
+#          type: string
+#          format: binary
+
+    VOTABLE: #conesearch
+      type: object
+      properties:
+        version:
+          type: number
+          example: 1.4
+          xml:
+            attribute: true
+        xmlns:
+          type: string
+          example: https://www.ivoa.net/xml/VOTable/v1.4
+          xml:
+            attribute: true
+        RESOURCE:
+          type: object
+          xml:
+            wrapped: true
+          properties:
+            name:
+              type: string
+              example: myFavouriteGalaxies
+              xml:
+                attribute: true
+            COOSYS:
+              type: object
+              properties:
+                ID:
+                  type: string
+                  example: sys
+                  xml:
+                    attribute: true
+                equinox:
+                  type: string
+                  example: J2000
+                  xml:
+                    attribute: true
+                epoch:
+                  type: string
+                  example: J2000
+                  xml:
+                    attribute: true
+                system:
+                  type: string
+                  example: eq_FK5
+                  xml:
+                    attribute: true
+            TABLE:
+              type: object
+              properties:
+                name:
+                  type: string
+                  example: results
+                  xml:
+                    attribute: true
+                DESCRIPTION:
+                  type: string
+                  example: Velocities and Distance estimations
+                PARAM:
+                  type: object
+                  properties:
+                    name:
+                      type: string
+                      example: Telescope
+                      xml:
+                        attribute: true
+                    datatype:
+                      type: string
+                      example: float
+                      xml:
+                        attribute: true
+                    ucd:
+                      type: string
+                      example: phys.size;instr.tel
+                      xml:
+                        attribute: true
+                    unit:
+                      type: string
+                      example: m
+                      xml:
+                        attribute: true
+                    value:
+                      type: string
+                      example: 3.6
+                      xml:
+                        attribute: true
+                FIELD:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      name:
+                        type: string
+                        xml:
+                          attribute: true
+                      DESCRIPTION:
+                        type: string
+                      ID:
+                        type: string
+                        xml:
+                          attribute: true
+                      ucd:
+                        type: string
+                        xml:
+                          attribute: true
+                      datatype:
+                        type: string
+                        xml:
+                          attribute: true
+                      width:
+                        type: integer
+                        xml:
+                          attribute: true
+                      precision:
+                        type: integer
+                        xml:
+                          attribute: true
+                      unit:
+                        type: string
+                        xml:
+                          attribute: true
+                      ref:
+                        type: string
+                        xml:
+                          attribute: true
+                  example:
+                    - name: "RA"
+                      ID: "col1"
+                      ucd: "pos.eq.ra;meta.main"
+                      datatype: "float"
+                      width: "6"
+                      precision: "2"
+                      unit: "deg"
+                      ref: "sys"
+                    - name: "Dec"
+                      ID: "col2"
+                      ucd: "pos.eq.dec;meta.main"
+                      datatype: "float"
+                      width: "6"
+                      precision: "2"
+                      unit: "deg"
+                      ref: "sys"
+                    - name: "Name"
+                      ID: "col3"
+                      ucd: "meta.id;meta.main"
+                      datatype: "char"
+                      arraysize: "8*"
+                    - name: "RVel"
+                      ID: "col4"
+                      ucd: "spect.dopplerVeloc"
+                      datatype: "int"
+                      width: "5"
+                      unit: "km/s"
+                    - name: "e_RVel"
+                      ID: "col5"
+                      ucd: "stat.error;spect.dopplerVeloc"
+                      datatype: "int"
+                      width: "3"
+                      unit: "km/s"
+                    - name: "R"
+                      ID: "col6"
+                      ucd: "pos.distance;pos.heliocentric"
+                      datatype: "float"
+                      width: "4"
+                      precision: "1"
+                      unit: "Mpc"
+                      DESCRIPTION: Distance of Galaxy, assuming H=75km/s/Mpc
+                DATA:
+                  type: object
+                  properties:
+                    tabledata:
+                      type: array
+                      items:
+                        type: array
+                        items:
+                          type: string
+                          xml:
+                            name: TD
+                        xml:
+                          name: TR
+                          wrapped: true
+                      xml:
+                        name: TABLEDATA
+                        wrapped: true
+                      example:
+                        - [ "010.68","+41.27","N 224","-297","5","0.7" ]
+                        - [ "287.43","-63.85","N 6744","839","6","10.4" ]
+                        - [ "023.48","+30.66","N 598","-182","3","0.7" ]

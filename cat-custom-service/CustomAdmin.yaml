@@ -1,0 +1,340 @@
+openapi: 3.0.0
+info:
+  title: DMS Custom Catalogs Admin API
+  description: |-
+    This administration API for the Custom Catalog Server is a secure API allowing 
+    creation and deletion of custom catalogs. Additionally, custom fields can be added
+    to a catalog or removed from a catalog. These kinds of changes are not expected
+    to occur regularly, and should be change controlled, so these operations are not
+    available to all users.
+    
+    These administrative changes require authentication and the
+    authenticated user must be authorized with the DMS.CAT admin role in the 
+    token received from the CSW Authorization and Authentication Service. The token must
+    be provided in the request header.
+  license:
+    name: Apache 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0.html
+  version: 0.9.0
+servers:
+  - url: 'https://future_custom_catalog_server/V1'
+security:
+  - catalog_auth:
+      - write:objects
+tags:
+  - name: Administration
+    description: Operations on the set of custom catalogs and to the fields within a custom catalog.
+paths:
+  /admin/catalog:
+    post:
+      tags:
+        - Administration
+      summary: Create a new custom catalog
+      description: 'Adds a new custom catalog with the default fields to the server. The parameters
+        of the new catalog are contained in the request body.'
+      operationId: addCatalog
+      requestBody:
+        description: A new catalog should include a descriptive catalog name as a string, a three letter pattern that will 
+          be used in the object id of all objects (prefix=APS yields APS1, APS2, etc.) And the subsystem owner of the catalog.
+          In order to operate on the catalog, the user must be a member of the subsystem user group in CSW AAS.
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/NewCatalog'
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NewCatalog'
+      responses:
+        '201':
+          description: A successful operation. The catalog was created properly. An ExistingCatalog structure is returned.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExistingCatalog'
+              example:
+                catalogId: C001,
+                catalogName: MyCatalog,
+                numberOfObjects: 0,
+                objectPrefix: APS,
+                owner: APS
+        '400':
+          description: Invalid field description provided
+        '401':
+          description: The request did not contain authentication information
+        '403':
+          description: The client is not authorized for this operation
+        '405':
+          description: Invalid input or authorization
+        '409':
+          description: A catalog with the suggested name or prefix already exists
+  /admin/catalog/{catalogId}:
+    get:
+      tags:
+        - Administration
+      summary: Returns the server information for an existing catalog
+      description: 'Return catalog information for an existing catalog using catalogId.'
+      operationId: queryCatalog
+      parameters:
+        - $ref: "../eng-shared/cat-shared.yaml#/components/parameters/catalogIdPath"
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExistingCatalog'
+        '400':
+          description: Invalid catalogId provided.
+        '404':
+          description: Catalog object was not found.
+        '405':
+          description: Invalid input or authorization.
+    patch:
+      tags:
+        - Administration
+      summary: Change the name or other parameter of an existing catalog
+      description: 'Change some information about an existing catalog. Note that fields
+        are updated in another API.'
+      operationId: updateCatalog
+      parameters:
+        - $ref: "../eng-shared/cat-shared.yaml#/components/parameters/catalogIdPath"
+      requestBody:
+        description: Catalog parameters that can be changed. The updated catalog description is returned.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchCatalog'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchCatalog'
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExistingCatalog'
+              example:
+                catalogId: C001,
+                catalogName: MyNewCatalog,
+                numberOfObjects: 1234,
+                objectPrefix: APS,
+                owner: APS
+        '400':
+          description: Invalid catalogId provided.
+        '404':
+          description: Catalog object was not found.
+        '405':
+          description: Invalid input or authorization.
+    delete:
+      tags:
+        - Administration
+      summary: Remove an existing catalog
+      description: Remove an existing custom catalog from the server.
+      operationId: deleteCatalog
+      parameters:
+        - $ref: "../eng-shared/cat-shared.yaml#/components/parameters/catalogIdPath"
+      responses:
+        '200':
+          description: Successful operation. Catalog removed.
+        '400':
+          description: Invalid catalogId provided.
+        '404':
+          description: Catalog object was not found.
+        '405':
+          description: Invalid input or authorization.
+  /admin/catalog/{catalogId}/field:
+    get:
+      tags:
+        - Administration
+      summary: Returns the list of custom fields present in a specific catalog.
+      description: Returns the names of the custom fields in a specific catalog.
+      operationId: queryCatalogField
+      parameters:
+        - $ref: "../eng-shared/cat-shared.yaml#/components/parameters/catalogIdPath"
+      responses:
+        '200':
+          description: Successful operation returns a list of custom catalog fields.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Fields'
+        '401':
+          description: The request did not contain authentication information.
+        '403':
+          description: The client is not authorized for this operation.
+        '404':
+          description: Catalog object with catalogId was not found.
+        '405':
+          description: Invalid input or authorization.
+    patch:
+      tags:
+        - Administration
+      summary: Add a custom field to an existing catalog
+      description: 'Add a new field to an existing catalog. The field can not exist.'
+      operationId: addCatalogField
+      parameters:
+        - $ref: "../eng-shared/cat-shared.yaml#/components/parameters/catalogIdPath"
+      requestBody:
+        description: Name and type of the new field to be added
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Field'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Field'
+      responses:
+        '200':
+          description: The successful operation returns the new list of custom fields.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Fields'
+        '400':
+          description: Invalid field description provided.
+        '401':
+          description: The request did not contain authentication information.
+        '403':
+          description: The client is not authorized for this operation.
+        '404':
+          description: Catalog object with catalogId was not found.
+        '405':
+          description: Invalid input or authorization.
+        '409':
+          description: A field with the suggested name already exists.
+  /admin/catalog/{catalogId}/field/{fieldName}:
+    delete:
+      tags:
+        - Administration
+      summary: Delete an existing custom field from an existing catalog
+      description: 'Delete an existing field from an existing catalog. The field can not be a mandatory field.'
+      operationId: deleteCatalogField
+      parameters:
+        - $ref: "../eng-shared/cat-shared.yaml#/components/parameters/catalogIdPath"
+        - name: fieldName
+          in: path
+          description: name of the field to be deleted from the existing catalog
+          required: true
+          schema:
+            type: string
+            example: RMag
+      responses:
+        '200':
+          description: The successful operation returns the new list of custom fields.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Fields'
+              example:
+                - Parallax: double
+        '400':
+          description: Invalid field description provided.
+        '401':
+          description: The request did not contain authentication information.
+        '403':
+          description: The client is not authorized for this operation.
+        '404':
+          description: Catalog object with catalogId was not found.
+        '405':
+          description: Invalid input or authorization.
+        '409':
+          description: A field with the suggested name already exists.
+components:
+  schemas:
+    NewCatalog:
+      type: object
+      required:
+        - catalogName
+        - owner
+      properties:
+        catalogName:
+          description: A new catalog should be given a descriptive name as a string.
+          type: string
+          example: "MyCatalog"
+        objectPrefix:
+          type: string
+          description: 'Up to three letter prefix for objectIds.  Example: prefix: "APS" results in APS1 for an objectId.
+            If more than 3 characters are provided, the first 3 characters will be used.'
+          example: "APS"
+        owner:
+          type: string
+          description: The subsystem that is the owner of this catalog. The user must have a role with the subsystem in order to add objects to the catalog.
+          example: "APS"
+          enum:
+            - TCS
+            - APS
+            - AO
+    PatchCatalog:
+      type: object
+      required:
+        - catalogName
+      properties:
+        catalogName:
+          type: string
+          example: "MyNewCatalog"
+    ExistingCatalog:
+      type: object
+      required:
+        - catalogId
+        - catalogName
+      properties:
+        catalogId:
+          type: string
+          example: "C001"
+        catalogName:
+          type: string
+          example: "MyCatalog"
+        numberOfObjects:
+          type: integer
+          example: 1234
+        objectPrefix:
+          type: string
+          description: 'Up to three letter prefix for objectIds.  Example: prefix: "APS" results in APS1 for an objectId.
+              If more than 3 characters are provided, the first 3 characters will be used.'
+          example: "APS"
+        owner:
+          type: string
+          description: The subsystem that is the owner of this catalog. The user must have a role with the subsystem in order to add objects to the catalog.
+          example: "APS"
+          enum:
+            - TCS
+            - APS
+            - AO
+    Field:
+      type: object
+      required:
+        - fieldName
+        - fieldType
+      properties:
+        fieldName:
+          type: string
+          description: The name of the new field. To be used for searching. Short names without spaces
+            will make life easier.
+          example: "RMag"
+        fieldType:
+          type: string
+          description: The type of the new field
+          example: integer
+          enum:
+            - string
+            - integer
+            - double
+            - boolean
+    Fields:
+      type: array
+      description: An array of Field objects, each with a name and type.
+      items:
+        $ref: '#/components/schemas/Field'
+      example:
+        - RMag: string,
+        - Parallax: double
+  securitySchemes:
+    catalog_auth:
+      type: "oauth2"
+      flows:
+        authorizationCode:
+          authorizationUrl: https://cswauthauthservice.tmt.org/oauth/dialog
+          tokenUrl: https://cswauthauthservice.tmt.org/oauth
+          scopes:
+            write:objects: Grants create and modify catalogs access

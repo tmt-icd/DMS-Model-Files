@@ -1,0 +1,328 @@
+openapi: 3.0.3
+info:
+  version: '0.9'
+  title: Engineering Database Query Service API
+  description: >-
+    The Engineering Query Service API consists HTTP endpoints for discovering, querying, and exporting events 
+    and logs in the Engineering Database. An endpoint for gathering all subsystem engineering information
+    is included. This endpoint accesses the file access API.
+    <p>
+    File submission and retrieval is handled by the Engineering File and Access Service, covered elsewhere.
+    <p>
+    The complete DMS codebase is available on [Github](https://github.com/tmtsoftware/dms).
+    <p>
+    The routes listed on this page are HTTP endpoints exposed by TMT Common Software.
+  license:
+    name: Apache 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0.html
+servers:
+  - url: 'https://future_eng_query_server/V1'
+tags:
+  - name: Engineering Queries
+    description: This API contains endpoints for querying events, logs, and alarms in Engineering Database.
+externalDocs:
+  description: "References for the required time format"
+  url: https://datatracker.ietf.org/doc/html/rfc3339
+
+paths:
+  /eng/sqlQuery:
+    post:
+      tags:
+        - Engineering Queries
+      description: This endpoint supports sending an SQL query to the event Engineering Database using SQL.
+          In this query, a time range may be included within the SQL query as required by the database system.
+      summary: Query the Engineering Database using an SQL-based query
+      operationId: addEngFile
+      requestBody:
+        description: Execute the SQL query provided in the request body.
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                statement:
+                  type: string
+                  description: "The SQL statement to execute. The query must be well-formed and obey the rules of the database."
+                  example: "SELECT alt, az FROM demands WHERE time >= '2023-10-29T08:00:00Z' AND time <= '2023-10-29T12:00:00Z'"
+                timeout:
+                  type: integer
+                  description: "An optional timeout for the query in seconds. The default is 10 seconds."
+                  example: 15
+                database:
+                  type: string
+                  description: "An optional database that will be used when executing the SQL query."
+                bindings:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/binding'
+                output:
+                  description: An optional parameter that when present and set to true, indicates the results should be returned as a file.
+                  type: string
+                  enum:
+                    - PLOT
+                    - EXPORT
+                    - DISPLAY
+                    - RAW
+                  default: DISPLAY
+              required:
+                - statement
+            examples:
+              example1:
+                value: # fully ad hoc statement
+                  statement: "SELECT az,el FROM tcs.demands WHERE time >= '2023-10-29T08:00:00Z' AND time <= '2023-10-29T12:00:00Z'"
+                  timeout: 15
+                  output: RAW
+                  database: EVENTS
+              example2:
+                value: # canned with parameters
+                  statement: "SELECT ?,? FROM ? WHERE time >= '2023-10-29T08:00:00Z' AND time <= '2023-10-29T12:00:00Z'"
+                  timeout: 15
+                  database: DEMANDS
+                  output: RAW
+                  bindings:
+                   - field: 1
+                     value: alt
+                   - field: 2
+                     value: az
+                   - field: 3
+                     value: tcs.demands
+      responses:
+        '200':
+          description: OK, Events returned with no issues.
+          content:
+            application/json:
+              schema:
+                $ref: '../eng-shared/eng-shared.yaml#/components/schemas/EngData'
+        '400':
+          description:
+            "Bad Request. Arguments provided were not correct or were incomplete: with explanatory text."
+        '404':
+          description: The requested service is not available.
+  '/eng/events':
+    get:
+      tags:
+        - Engineering Queries
+      description: Returns values for a set of event parameters over a specified time range using built-in simplified
+        queries.
+      summary: Retrieve Event Data Within a Time Range
+      operationId: retrieve data
+      parameters:
+        - $ref: "../eng-shared/eng-shared.yaml#/components/parameters/startTime"
+        - $ref: "../eng-shared/eng-shared.yaml#/components/parameters/endTime"
+        - name: binSize
+          in: query
+          description: The number of time units in a bin.
+          schema:
+            type: integer
+            minimum: 1
+            default: 10
+        - name: binUnits
+          in: query
+          schema:
+            type: string
+            description: The time units of the binSize
+            enum:
+              - microseconds
+              - milliseconds
+              - seconds
+              - minutes
+              - hours
+              - days
+              - weeks
+              - months
+              - years
+            default: seconds
+        - name: fillMethod
+          in: query
+          schema:
+            type: string
+            enum: [interp, last]
+            default: last
+          description: |
+            An optional parameter that can be used to indicate how to fill in missing values in query results when no data value
+            exists within a bin.
+              
+            Methods if *binSize* is specified.
+            * interp - missing values filled in with interpolated values between data points when available
+            * last - missing values replaced value with most recent value
+
+        - name: aggregate
+          in: query
+          schema:
+            type: string
+            enum: [max, min, mean, median, first, last, count]
+            default: mean
+          description: |
+            An optional parameter that must be present when binning data with *binSize* and *binUnits*.
+            Aggregation methods.
+    
+            * max - the largest value in the bin
+            * min - the smallest value in the bin
+            * mean - the mean of the values in the bin
+            * median - the median of the values in the bin
+            * first - the first value or oldest value in the bin
+            * last - the last or newest value in the bin
+            * count - the number of values in the bin
+
+        - name: events
+          in: query
+          description: list of event parameters that should be used in the query
+          style: form
+          explode: false
+          schema:
+            type: array
+            items:
+              $ref: '../eng-shared/eng-shared.yaml#/components/schemas/ParameterPath'
+          example:
+            [ tcs.mount.current.alt, tcs.mount.current.az ]
+        - name: output
+          in: query
+          description: An optional parameter that when present and set to true, indicates the results should be returned as a file.
+          schema:
+            type: string
+            enum:
+              - PLOT
+              - EXPORT
+              - DISPLAY
+              - RAW
+            default: DISPLAY
+          example: RAW
+      responses:
+        '200':
+          description: OK, Events returned with no issues.
+          content:
+            application/json:
+              schema:
+                $ref: '../eng-shared/eng-shared.yaml#/components/schemas/EngData'
+        '400':
+          description:
+            "Bad Request. Arguments provided were not correct or were incomplete: with explanatory text."
+        '404':
+          description: Not Found
+  '/eng/logs/{subsystem}':
+    get:
+      tags:
+        - Engineering Queries
+      description: Returns all log messages over a specified time range for a specific subsystem.
+      summary: Retrieve All Subsystem Log Messages Within a Time Range
+      operationId: retrieve subsystem logs
+      parameters:
+        - $ref: "../eng-shared/eng-shared.yaml#/components/parameters/startTime"
+        - $ref: "../eng-shared/eng-shared.yaml#/components/parameters/endTime"
+        - $ref: "../eng-shared/eng-shared.yaml#/components/parameters/subsystem"
+        - $ref: "../eng-shared/eng-shared.yaml#/components/parameters/export"
+        - $ref: "../eng-shared/eng-shared.yaml#/components/parameters/oneLine"
+      responses:
+        '200':
+          description: OK, query successful. 
+            Payload is log entries for the provided subsystem ordered by time. When query parameter 'oneLine'
+            is true, the text/plain response is provided.
+          content:
+            application/json:
+              schema:
+                $ref: '../eng-shared/eng-shared.yaml#/components/schemas/LogData'
+            text/plain:
+              schema:
+                $ref: '../eng-shared/eng-shared.yaml#/components/schemas/OneLineLogData'
+        '400':
+          description:
+            "Bad Request. Arguments provided were not correct or were incomplete: with explanatory text."
+        '404':
+          description: Not Fount
+  '/eng/logs/components':
+    get:
+      tags:
+        - Engineering Queries
+      description: Returns all log messages over a specified time range for one or more components.
+      summary: Retrieve Component Log Messages Within a Time Range
+      operationId: retrieve component logs
+      parameters:
+        - $ref: "../eng-shared/eng-shared.yaml#/components/parameters/startTime"
+        - $ref: "../eng-shared/eng-shared.yaml#/components/parameters/endTime"
+        - name: components
+          description: One or more component prefix values.
+          in: query
+          required: true
+          style: form
+          explode: false
+          example:
+            - IRIS.filterAssem
+            - IRIS.filterHCD
+            - ESW.sequencer23
+          schema:
+            type: array
+            items:
+              type: string
+        - $ref: "../eng-shared/eng-shared.yaml#/components/parameters/export"
+        - $ref: "../eng-shared/eng-shared.yaml#/components/parameters/oneLine"
+      responses:
+        '200':
+          description: OK, query successful.
+            Payload is log entries for the provided components ordered by time. When query parameter 'oneLine'
+            is true, the text/plain response is provided.
+          content:
+            application/json:
+              schema:
+                $ref: '../eng-shared/eng-shared.yaml#/components/schemas/LogData'
+            text/plain:
+              schema:
+                $ref: '../eng-shared/eng-shared.yaml#/components/schemas/OneLineLogData'
+        '400':
+          description:
+            "Bad Request. Arguments provided were not correct or were incomplete: with explanatory text."
+        '404':
+          description: Not Found
+
+  '/eng/all/{subsystem}':
+    get:
+      tags:
+        - Engineering Queries
+      description: >-
+        Retrieve all engineering events, files, and logs for a single subsystem over a specified time range
+      summary: Retrieve all engineering data for a subsystem within a time range.
+      operationId: retrieveAll
+      parameters:
+        - $ref: "../eng-shared/eng-shared.yaml#/components/parameters/startTime"
+        - $ref: "../eng-shared/eng-shared.yaml#/components/parameters/endTime"
+        - $ref: "../eng-shared/eng-shared.yaml#/components/parameters/subsystem"
+        - name: kinds
+          in: query
+          description: "Indicate which type of engineering data is desired: FILES, EVENTS, LOGS, ALL"
+          example: ALL
+          schema:
+            type: string
+            enum:
+              - FILES
+              - EVENTS
+              - LOGS
+              - ALL
+      responses:
+        '200':
+          description: Successful operation. A file is returned.
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
+              example:
+                opaque file returned
+        '404':
+          description: Not Found
+components:
+  schemas:
+    binding:
+      type: object
+      required:
+        - field
+        - value
+      properties:
+        field:
+          type: integer
+        value:
+          type: string
+      example:
+        - field:1 
+          value:alt
+        - field:2 
+          value:DEMANDS
