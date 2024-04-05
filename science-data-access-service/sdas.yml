@@ -27,7 +27,7 @@ paths:
       parameters:
       - name: URI
         in: path
-        description: string identifier of file in format tmt:<archiveName>/<filename>
+        description: string identifier of file in format tmt:&lt;archiveName>/&lt;filename>
         example: tmt:hq/20230323_001928.fits
         required: true
         schema: 
@@ -45,7 +45,7 @@ paths:
         schema:
           $ref: '../shared.yml#/components/schemas/PackageType'
       responses:
-        '200':
+        '201':
           description: OK
           content:
             application/octet-stream:

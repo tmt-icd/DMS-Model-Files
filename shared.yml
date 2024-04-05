@@ -53,7 +53,7 @@ components:
     exposureId: #sdas
       name: exposureId
       in: query
-      description: String identifier for an exposure, in format <OBSID>-<INST>-<CHAN>-<TYP#>-<NNNN>, where &lt;OBSID> is the observation ID, &lt;INST> is the instrument identifier, &lt;CHAN> is the channel identifier, &lt;TYP#> is the image type identifier followed by the calibration level number, and &lt;NNNN> is the four digit exposure number.
+      description: String identifier for an exposure, in format &lt;OBSID>-&lt;INST>-&lt;CHAN>-&lt;TYP#>-&lt;NNNN>, where &lt;OBSID> is the observation ID, &lt;INST> is the instrument identifier, &lt;CHAN> is the channel identifier, &lt;TYP#> is the image type identifier followed by the calibration level number, and &lt;NNNN> is the four digit exposure number.
       example: 2022A-123-044-IRIS-IMG-DRK1-0023
       schema:
         type: string
