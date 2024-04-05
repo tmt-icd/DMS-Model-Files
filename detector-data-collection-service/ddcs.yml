@@ -1,6 +1,6 @@
 openapi: 3.0.0
 info:
-  version: '1.0'
+  version: '0.9.0'
   title: TMT Data Managment System REST Endpoints
   description: >-
     The Detector Data Collection Service (DDCS) watches for new exposures written by data producers and moves them to the permanent store.

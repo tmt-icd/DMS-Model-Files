@@ -1,6 +1,6 @@
 openapi: 3.0.0
 info:
-  version: '1.0'
+  version: '0.9.0'
   title: Metadata Access Service REST Endpoints
   description: >-
     The Metadata Access Service (MAS) is an HTTP service that allows clients (applications and users) to fetch metadata for an ExposureId in a variety of formats such as FITS header and JSON. It also supports a request for specific header information using one or more FITS keywords.
@@ -45,8 +45,11 @@ paths:
             application/json:
               schema:
                 $ref: '../shared.yml#/components/schemas/Header'
+        '400':
+          description:
+            "Bad Request. Arguments provided were not correct or were incomplete: with explanatory text provided."
         '404':
-          description: Not Found
+          description: "No files were found using these parameters."
   '/metadata/raw':
     get:
       description: Get raw metadata as a list of Events for a specific Observe Event for a specific exposure.  A single Event can optionally be retrieved by passing in the Event path.
@@ -79,5 +82,8 @@ paths:
             application/json:
               schema:
                 $ref: '../shared.yml#/components/schemas/EngData'
+        '400':
+          description:
+            "Bad Request. Arguments provided were not correct or were incomplete: with explanatory text provided."
         '404':
-          description: Not Found
+          description: "No files were found using these parameters."
