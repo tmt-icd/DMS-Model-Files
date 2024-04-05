@@ -1,6 +1,6 @@
 openapi: 3.0.0
 info:
-  version: '1.0'
+  version: '0.9.0'
   title: TMT Data Management System REST Endpoints
   description: >-
     The Calibration Data Service (CDS) is an HTTP service that identifies and returns the location of calibration files suitable for reduction.
@@ -37,12 +37,7 @@ paths:
         - $ref: '../shared.yml#/components/parameters/scale'
         - $ref: '../shared.yml#/components/parameters/spectralResolution'
         - $ref: '../shared.yml#/components/parameters/aoMode'
-        - name: exposureId
-          in: query
-          required: true
-          schema:
-            $ref: '../shared.yml#/components/schemas/ExposureId'
-      responses: 
+      responses:
         '200':
           description: Exposure IDs of matching files
           content:
@@ -51,5 +46,31 @@ paths:
                 type: array
                 items:
                   $ref: '../shared.yml#/components/schemas/ExposureId'
+        '404':
+          description: Not Found
+  '/calibration/exposure/{exposureId}':
+    get:
+      description: >-
+        Search storage for the best calibration file of a specific type for a given exposure.
+        The best calibration is determined using an algorithm specific to the file type requested
+        based on the metadata in the exposure identified by the exposureId.
+      summary: Search storage for calibration based on exposure
+      tags:
+        - Calibration Data Service
+      operationId: locate calibration for exposure
+      parameters:
+        - $ref: '../shared.yml#/components/parameters/calibrationType'
+        - name: exposureId
+          in: query
+          required: true
+          schema:
+            $ref: '../shared.yml#/components/schemas/ExposureId'
+      responses:
+        '200':
+          description: Exposure ID of matching file
+          content:
+            application/json:
+              schema:
+                $ref: '../shared.yml#/components/schemas/ExposureId'
         '404':
           description: Not Found
