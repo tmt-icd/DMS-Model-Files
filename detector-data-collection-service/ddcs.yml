@@ -19,11 +19,11 @@ info:
 paths:
   '/transfer/{subsystem}': 
     get: 
-      description: Obtain a URI for a instrument transfer area on the Summit Storage
-      summary: Get transfer area URI
+      description: Obtain path for a instrument transfer area on the Summit Storage
+      summary: Get transfer area path
       tags:
       - Detector Data Collection Service
-      operationId: get transfer URI
+      operationId: get transfer path
       parameters:
         - name: subsystem
           in: path
@@ -32,11 +32,40 @@ paths:
           schema:
             $ref: '../shared.yml#/components/schemas/Subsystem'
       responses: 
-        '200':
-          description: URI of transfer area
+        '201':
+          description: path of transfer area
           content:
             application/json:
               schema: 
                 type: string
-        '404':
-          description: Not Found
+                example: /data/transfer/iris/
+        '400':
+          description:
+            "Bad Request. Arguments provided were not correct or were incomplete: with explanatory text provided."
+    post:
+      description: Create an instrument transfer area on the Summit Storage for a subsystem
+      summary: Create transfer area
+      tags:
+        - Detector Data Collection Service
+      operationId: create transfer area
+      parameters:
+        - name: subsystem
+          in: path
+          required: true
+          description: specify subsystem that will be using transfer area
+          schema:
+            $ref: '../shared.yml#/components/schemas/Subsystem'
+      responses:
+        '201':
+          description: path of transfer area
+          content:
+            application/json:
+              schema:
+                type: string
+                example: /data/transfer/iris/
+        '400':
+          description:
+            "Bad Request. Arguments provided were not correct or were incomplete: with explanatory text provided."
+        '401':
+          description:
+            "Bad Request. The caller is not authorized for this operation."
