@@ -1,6 +1,6 @@
 openapi: 3.0.0
 info:
-  version: '1.0'
+  version: '0.9.0'
   title: Science Data Access Service REST Endpoints
   description: >-
     The Science Data Access Service (SDAS) is an HTTP service that allows science data to be retrieved from the Science Data Storage System.
@@ -17,9 +17,9 @@ info:
     url: http://www.apache.org/licenses/LICENSE-2.0.html
 paths:
    
-  '/science/retrieve/{URI}':
+  '/retrieve/{URI}':
     get:
-      description: Download one or more exposures based on URI
+      description: Download one or more science or ancillary files based on URI
       summary: Get science file(s)
       tags: 
       - Science Data Access Service
@@ -49,9 +49,12 @@ paths:
           content:
             application/octet-stream:
               schema: {}
+        '400':
+          description:
+            "Bad Request. Arguments provided were not correct or were incomplete: with explanatory text provided."
         '404':
-          description: Not Found
-  '/science/files':
+          description: "No files were found using these parameters."
+  '/science/file':
     get:
       description: Locate an exposure based on Exposure ID. 
       summary: Locate science file
@@ -66,15 +69,17 @@ paths:
         schema: 
           $ref: '../shared.yml#/components/schemas/ExposureId'
       responses:
-        '200':
+        '201':
           description: URI of file if successfully found
           content:
             application/json:
               schema: 
                 type: string
-          
+        '400':
+          description:
+            "Bad Request. Arguments provided were not correct or were incomplete: with explanatory text provided."
         '404':
-          description: Not Found
+          description: "No files were found using these parameters."
   '/science/search':
     get:
       description: Search storage for files based on query parameters
@@ -105,7 +110,7 @@ paths:
         - $ref: '../shared.yml#/components/parameters/outputFormat'
         
       responses: 
-        '200':
+        '201':
           description: URIs of matching files.  Media type depends on `outputType parameter`
           content:
             application/json:
@@ -125,5 +130,77 @@ paths:
               schema:
                 type: string
                 example: "<html>\n<h1>myFavouriteGalaxies</h1>\n<h2>Velocities and Distance estimations</h2>\n<TABLE name=\"results\">\n<TR>\n<TD>010.68</TD><TD>+41.27</TD><TD>N 224</TD><TD>-297</TD><TD>5</TD><TD href=\"http://someurl/somefile.fits\">Download</TD><TD>0.7</TD>\n</TR>\n<TR>\n<TD>287.43</TD><TD>-63.85</TD><TD>N 6744</TD><TD>839</TD><TD>6</TD><TD>10.4</TD>\n</TR>\n<TR>\n<TD>023.48</TD><TD>+30.66</TD><TD>N 598</TD><TD>-182</TD><TD>3</TD><TD>0.7</TD><TD href=\"http://someurl/somefile2.fits\">Download</TD>\n</TR>\n</TABLE></html>"
+        '400':
+          description:
+            "Bad Request. Arguments provided were not correct or were incomplete: with explanatory text provided."
+        '404':
+          description: "No files were found using these parameters."
+  '/ancillary/program/{programId}':
+    get:
+      description: Search storage for an ancillary files associated with a programId
+      summary: Search for program ancillary files
+      tags:
+        - Science Data Access Service
+      operationId: locate program ancillary files
+      parameters:
+        - $ref: "../shared.yml#/components/parameters/programId"
+
+      responses:
+        '201':
+          description: A list of information about matching files, including download URI.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '../shared.yml#/components/schemas/AncillaryFileProgramResponse'
+        '400':
+          description:
+            "Bad Request. Arguments provided were not correct or were incomplete: with explanatory text provided."
+        '404':
+          description: "No files were found using these parameters."
+  '/ancillary/observation/{observationId}':
+    get:
+      description: Search storage for an ancillary files associated with a observationId
+      summary: Search for observation ancillary files
+      tags:
+        - Science Data Access Service
+      operationId: locate observation ancillary files
+      parameters:
+        - $ref: "../shared.yml#/components/parameters/observationId"
+
+      responses:
+        '201':
+          description: A list of information about matching files, including download URI.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '../shared.yml#/components/schemas/AncillaryFileObservationResponse'
         '404':
           description: Not Found
+  '/ancillary/exposure/{exposureId}':
+    get:
+      description: Search storage for an ancillary files associated with an Exposure ID
+      summary: Search for exposure ancillary files
+      tags:
+        - Science Data Access Service
+      operationId: locate exposure ancillary files
+      parameters:
+        - $ref: "../shared.yml#/components/parameters/exposureId"
+
+      responses:
+        '201':
+          description: A list of information about matching files, including download URI.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '../shared.yml#/components/schemas/AncillaryFileExposureResponse'
+        '400':
+          description:
+            "Bad Request. Arguments provided were not correct or were incomplete: with explanatory text provided."
+        '404':
+          description: "No files were found using these parameters."

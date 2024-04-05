@@ -1,6 +1,6 @@
 openapi: 3.0.0
 info:
-  version: '1.0'
+  version: '0.9.0'
   title: Science Data Storage Service REST Endpoints
   description: >-
     The Science Data Storage Service (SDSS) is an HTTP service that allows science data to be added to the Science Data Storage System.
@@ -16,8 +16,8 @@ info:
     name: Apache 2.0
     url: http://www.apache.org/licenses/LICENSE-2.0.html
 paths:
-  '/science/files':
-    put:
+  '/science':
+    post:
       description: Add science file to the science archive
       summary: Add science file
       tags:
@@ -42,5 +42,150 @@ paths:
             application/json:
               schema: 
                 type: string
-        '404':
-          description: Not Found
+        '500':
+          description:
+            "Bad Request. Arguments provided were not correct or were incomplete: with explanatory text provided."
+  '/ancillary/program/{programId}':
+    post:
+      tags:
+        - Science Data Storage Service
+      description: "Add one ancillary file associated with a program to the Science Archive"
+      summary: Add science ancillary file to program
+      operationId: addScienceAncillaryFileProgram
+      parameters:
+        - $ref: "../shared.yml#/components/parameters/programId"
+        - name: userTime
+          in: query
+          description: "This is an optional time that can be provided to associate to specific time or date within a program. Times
+            follow ISO-8601 format - yyyy-MM-ddTHH:mm:ssZ. Z is Zulu=UTC."
+          example: 2025-04-12T23:20:50.52Z
+          schema:
+            type: string
+            format: date-time
+        - name: fileType
+          in: query
+          description: "Type of file (e.g. weather map, PSFR data)"
+          example: "weather map"
+          schema:
+            type: string
+      requestBody:
+        description: file to be uploaded
+        required: true
+        content:
+          application/octet-stream:
+            schema: {}
+      responses:
+        '201':
+          description: The submitted file is successfully added. A description of the added file including its fileId is returned as JSON.
+          content:
+            application/json:
+              schema:
+                $ref: "../shared.yml#/components/schemas/AncillaryFileProgramResponse"
+              example:
+                url: https://dmsinternalstorage/a/b/c/top-end-temps-20450412:20:50:52
+                timestamp: 2045-04-12T23:20:50.52Z
+                programId: 2039B-P042
+                fileName: 2039B-P042_top-end-temps-20450412:20:50:52
+                fileId: "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+        '401':
+          description:
+            "Bad Request. The caller is not authorized for this operation."
+        '500':
+          description:
+            "Bad Request. Arguments provided were not correct or were incomplete: with explanatory text."
+  '/ancillary/observation/{observationId}':
+    post:
+      tags:
+        - Science Data Storage Service
+      description: "Add one ancillary file associated with an observation to the Science Archive"
+      summary: Add science ancillary file to observation
+      operationId: addScienceAncillaryFileObservation
+      parameters:
+        - $ref: "../shared.yml#/components/parameters/observationId"
+        - name: userTime
+          in: query
+          description: "This is an optional time that can be provided to associate to specific time or date within an observation. Times
+            follow ISO-8601 format - yyyy-MM-ddTHH:mm:ssZ. Z is Zulu=UTC."
+          example: 2025-04-12T23:20:50.52Z
+          schema:
+            type: string
+            format: date-time
+        - name: fileType
+          in: query
+          description: "Type of file (e.g. weather map, PSFR data)"
+          example: "weather map"
+          schema:
+            type: string
+      requestBody:
+        description: file to be uploaded
+        required: true
+        content:
+          application/octet-stream:
+            schema: {}
+      responses:
+        '201':
+          description: The submitted file is successfully added. A description of the added file including its fileId is returned as JSON.
+          content:
+            application/json:
+              schema:
+                $ref: "../shared.yml#/components/schemas/AncillaryFileObservationResponse"
+              example:
+                url: https://dmsinternalstorage/a/b/c/top-end-temps-20450412:20:50:52
+                timestamp: 2045-04-12T23:20:50.52Z
+                observationId: 2039B-P042-O123
+                fileName: 2039B-P042-O123_top-end-temps-20450412:20:50:52
+                fileId: "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+        '401':
+          description:
+            "Bad Request. The caller is not authorized for this operation."
+        '500':
+          description:
+            "Bad Request. Arguments provided were not correct or were incomplete: with explanatory text."
+  '/ancillary/exposure/{exposureId}':
+    post:
+      tags:
+        - Science Data Storage Service
+      description: "Add one ancillary file associated with an exposure to the Science Archive"
+      summary: Add science ancillary file to exposure
+      operationId: addScienceAncillaryFileExposure
+      parameters:
+        - $ref: "../shared.yml#/components/parameters/exposureId"
+        - name: userTime
+          in: query
+          description: "This is an optional time that can be provided to associate to specific time or date within an exposure. Times
+            follow ISO-8601 format - yyyy-MM-ddTHH:mm:ssZ. Z is Zulu=UTC."
+          example: 2025-04-12T23:20:50.52Z
+          schema:
+            type: string
+            format: date-time
+        - name: fileType
+          in: query
+          description: "Type of file (e.g. weather map, PSFR data)"
+          example: "weather map"
+          schema:
+            type: string
+      requestBody:
+        description: file to be uploaded
+        required: true
+        content:
+          application/octet-stream:
+            schema: {}
+      responses:
+        '201':
+          description: The submitted file is successfully added. A description of the added file including its fileId is returned as JSON.
+          content:
+            application/json:
+              schema:
+                $ref: "../shared.yml#/components/schemas/AncillaryFileExposureResponse"
+              example:
+                url: https://dmsinternalstorage/a/b/c/top-end-temps-20450412:20:50:52
+                timestamp: 2045-04-12T23:20:50.52Z
+                exposureId: 2039B-P042-O123-IRIS-IMG-SCI1-1234
+                fileName: 2039B-P042-O123-IRIS-IMG-SCI1-1234_top-end-temps-20450412:20:50:52
+                fileId: "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+        '401':
+          description:
+            "Bad Request. The caller is not authorized for this operation."
+        '500':
+          description:
+            "Bad Request. Arguments provided were not correct or were incomplete: with explanatory text."
