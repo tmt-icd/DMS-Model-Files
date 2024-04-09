@@ -53,7 +53,7 @@ paths:
               schema: 
                 $ref: '../eng-shared/eng-shared.yaml#/components/schemas/FileItem'
               example:
-                url: https://dmsinternalstorage/a/b/c/top-end-temps-20450412:20:50:52
+                uri: tmt:tmt/top-end-temps-20450412:20:50:52
                 timestamp: 2045-04-12T23:20:50.52Z
                 subsystem: ESEN
                 channel: top-end-temps

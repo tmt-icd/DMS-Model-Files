@@ -104,13 +104,21 @@ components:
       example:
         IRGSC-10034559
     fileId:
-        in: path
-        name: fileId
-        description: A unique indentifier for a previously stored engineering ancillary file.
-        required: true
-        schema:
-          type: string
-          example: a1c6a2ab-4b01-4253-b4c9-70e04b3b48fc
+      in: path
+      name: fileId
+      description: A unique indentifier for a previously stored engineering ancillary file.
+      required: true
+      schema:
+        type: string
+        example: a1c6a2ab-4b01-4253-b4c9-70e04b3b48fc
+    uri:
+      name: uri
+      in: query
+      description: A unique identifier for the ancillary file
+      required: true
+      schema:
+        type: string
+        example: tmt:hq/topEndTemps-2025-04-12T23:20:50.52Z
   schemas:
     Subsystem:
       description: name of subsystem
@@ -134,10 +142,10 @@ components:
     FileItem:
       type: object
       properties:
-        url:
+        uri:
           type: string
-          format: url
-          example: https://dmsinternalstorage/a/b/c/fileId
+          format: uri
+          example: tmt:tmt/fileName
         timestamp:
           type: string
           format: date-time
@@ -169,7 +177,7 @@ components:
           example: # dataType: Files,
             [
               {
-                url: https://dmsinternalstorage/a/b/c/fileName1,
+                uri: tmt:hq/topEndTemps-2025-04-12T23:20:50.52Z,
                 timestamp: 2025-04-12T23:20:50.52Z,
                 checksum: 120EA8A25E5D487BF68B5F7096440019,
                 subsystem: ESEN,
@@ -179,7 +187,7 @@ components:
                 tags: [ name:location value:top-end, name:sensorType value:temp ]
               },
               {
-                url: https://dmsinternalstorage/e/f/g/fileName2,
+                uri: tmt:hq/topEndTemps-2025-04-13T23:20:00.32Z,
                 timestamp: 2025-04-13T23:20:00.32Z,
                 checksum: CE114E4501D2F4E2DCEA3E17B546F339,
                 subsystem: ESEN,
@@ -400,22 +408,22 @@ components:
           {
             "files": [
               {
-                url: https://dmsinternalstorage/a/b/c/TCSConfig04232036,
+                uri: tmt:hq/TCSConfig04232036-2037-04-12T23:20:50.52Z,
                 timestamp: 2037-04-12T23:20:50.52Z,
                 checksum: 120EA8A25E5D487BF68B5F7096440019,
                 subsystem: TCS,
                 channel: tcsStartupConfig,
                 fileName: TCSConfig04232036,
-                fieldId: "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+                fieldId: "3fa85f64-5717-4562-b3fc-2c963f66afa6Z",
               },
               {
-                url: https://dmsinternalstorage/e/f/g/TCSPointing03032937,
+                uri: tmt:hq/TCSPointing03032937-037-03-03T20:20:00.32Z,
                 timestamp: 2037-03-03T20:20:00.32Z,
                 checksum: CE114E4501D2F4E2DCEA3E17B546F339,
                 subsystem: TCS,
                 channel: mountPointing,
                 fileName: TCSPointing03032937,
-                fieldId: "3fa85f64-5717-4562-c34c-2c963f66ada2",
+                fieldId: "3fa85f64-5717-4562-c34c-2c963f66ada2Z",
                 tags: [ name:type value:pointing, name:operator value:jjohnson ]
               }
             ]
