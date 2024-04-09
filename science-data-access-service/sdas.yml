@@ -17,7 +17,7 @@ info:
     url: http://www.apache.org/licenses/LICENSE-2.0.html
 paths:
    
-  '/retrieve/{URI}':
+  '/retrieve':
     get:
       description: Download one or more science or ancillary files based on URI
       summary: Get science file(s)
@@ -25,13 +25,16 @@ paths:
       - Science Data Access Service
       operationId: retrieve science files
       parameters:
-      - name: URI
-        in: path
+      - name: URIs
+        in: query
         description: string identifier of file in format tmt:&lt;archiveName>/&lt;filename>
-        example: tmt:hq/20230323_001928.fits
+        example: "tmt:hq/20230323_001928.fits,  tmt:useltp/20230324_005623.fits"
         required: true
-        schema: 
+        style: form
+        explode: false
+        schema:
           type: array
+          minItems: 1
           items:
             type: string
       - name: compression
