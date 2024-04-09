@@ -182,7 +182,7 @@ paths:
               schema:
                 $ref: "../shared.yml#/components/schemas/AncillaryFileExposureResponse"
               example:
-                url: tmt:hq/2039B-042-123-IRIS-IMG-SCI1-1234_top-end-temps-20450412.fits
+                uri: tmt:hq/2039B-042-123-IRIS-IMG-SCI1-1234_top-end-temps-20450412.fits
                 timestamp: 2045-04-12T23:20:50.52Z
                 exposureId: 2039B-042-123-IRIS-IMG-SCI1-1234
                 fileName: 2039B-042-123-IRIS-IMG-SCI1-1234_top-end-temps-20450412.fits
