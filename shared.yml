@@ -39,15 +39,29 @@ components:
     programId: #sdas
       name: programId
       in: query
-      description: String identifier for the program, in format &lt;YYYY>&lt;S>-P&lt;XXX>, where &lt;YYYY> is the semester year, &lt;S> is the semester (either A or B), and &lt;XXX> is the three digit program number
-      example: 2039B-P042
+      description: String identifier for the program, in format &lt;YYYY>&lt;S>-&lt;XXX>, where &lt;YYYY> is the semester year, &lt;S> is the semester (either A or B), and &lt;XXX> is the three digit program number
+      example: 2039B-042
+      schema:
+        type: string
+    observationId: #sdas
+      name: observationId
+      in: query
+      description: String identifier for an observation, in format &lt;YYYY>&lt;S>-&lt;XXX>-&lt;NNN>, where &lt;YYYY> is the semester year, &lt;S> is the semester (either A or B), &lt;XXX> is the three digit program number, and &lt;NNN> is the three digit observation number
+      example: 2039B-042-123
+      schema:
+        type: string
+    exposureId: #sdas
+      name: exposureId
+      in: query
+      description: String identifier for an exposure, in format &lt;OBSID>-&lt;INST>-&lt;CHAN>-&lt;TYP#>-&lt;NNNN>, where &lt;OBSID> is the observation ID, &lt;INST> is the instrument identifier, &lt;CHAN> is the channel identifier, &lt;TYP#> is the image type identifier followed by the calibration level number, and &lt;NNNN> is the four digit exposure number.
+      example: 2022A-123-044-IRIS-IMG-DRK1-0023
       schema:
         type: string
     obsId: #sdas
       name: obsId
       in: query
-      description: String identifier for the observation, in format &lt;ProgramID>-O&lt;XXX>, where &lt;ProgramID> is the Program ID (e.g. 2039B-P042) and XXX is the observation number
-      example: 2039B-P042-O567
+      description: String identifier for the observation, in format &lt;ProgramID>-&lt;XXX>, where &lt;ProgramID> is the Program ID (e.g. 2039B-042) and XXX is the observation number
+      example: 2039B-042-567
       schema:
         type: string
     observer: #sdas
@@ -155,7 +169,7 @@ components:
   schemas:
     ExposureId: #cds, mas, sdss, sdas
       type: string
-      example: "2022A-P123-O044-IRIS-IMG-DRK-0023-00"
+      example: "2022A-123-044-IRIS-IMG-DRK-0023"
     ObserveEvent: #mas
       type: string
     HeaderItem: 
@@ -273,6 +287,69 @@ components:
             type: array
             items:
               $ref: '#/components/schemas/EventData'
+    AncillaryFileProgramResponse:
+      type: object
+      properties:
+        uri:
+          type: string
+          format: uri
+          example: tmt:hq/2039B-042_weatherMap-20391012.fits
+        timestamp:
+          type: string
+          format: date-time
+          example: 2039-10-12T23:20:50.52Z
+        programId:
+          type: string
+          example: 2039B-042
+        fileName:
+          type: string
+          example: 2039B-042_weatherMap-20391012.fits
+        fileId:
+          type: string
+          format: uuid
+          example: "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+    AncillaryFileObservationResponse:
+      type: object
+      properties:
+        uri:
+          type: string
+          format: uri
+          example: tmt:hq/2039B-042-123_weatherMap-20391012.fits
+        timestamp:
+          type: string
+          format: date-time
+          example: 2039-10-12T23:20:50.52Z
+        observationId:
+          type: string
+          example: 2039B-042-123
+        fileName:
+          type: string
+          example: 2039B-042-123_weatherMap-20391012.fits
+        fileId:
+          type: string
+          format: uuid
+          example: "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+    AncillaryFileExposureResponse:
+      type: object
+      properties:
+        uri:
+          type: string
+          format: uri
+          example: tmt:hq/2039B-042-123-IRIS-IMG-SCI1-1234_weatherMap-20391012.fits
+        timestamp:
+          type: string
+          format: date-time
+          example: 2039-10-12T23:20:50.52Z
+        ExposureId:
+          type: string
+          example: 2039B-042-123-IRIS-IMG-SCI1-1234
+        fileName:
+          type: string
+          example: 2039B-042-123-IRIS-IMG-SCI1-1234_weatherMap-20391012.fits
+        fileId:
+          type: string
+          format: uuid
+          example: "3fa85f64-5717-4562-b3fc-2c963f66afa6"
 
     ScienceSearchResultItem: #sdas
       type: object
