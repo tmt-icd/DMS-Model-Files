@@ -492,7 +492,7 @@
       "units": "NoUnits",
       "channel": [
         {
-          "name": "IMG-ATM",
+          "name": "IRIS-IFS",
           "comment": "",
           "source": {
             "subsystem": "TCS",
@@ -502,7 +502,17 @@
           }
         },
         {
-          "name": "ATM",
+          "name": "IRIS-IMAGER",
+          "comment": "",
+          "source": {
+            "subsystem": "TCS",
+            "componentName": "cmIRIS",
+            "eventName": "imgAtmDispersion",
+            "parameterName": "wavelength"
+          }
+        },
+        {
+          "name": "MODHIS",
           "comment": "",
           "source": {
             "subsystem": "TCS",
@@ -520,7 +530,7 @@
       "units": "NoUnits",
       "channel": [
         {
-          "name": "IMG-ATM",
+          "name": "IRIS-IMAGER",
           "comment": "",
           "source": {
             "subsystem": "TCS",
@@ -530,7 +540,17 @@
           }
         },
         {
-          "name": "ATM",
+          "name": "IRIS-IFS",
+          "comment": "",
+          "source": {
+            "subsystem": "TCS",
+            "componentName": "cmIRIS",
+            "eventName": "imgAtmDispersion",
+            "parameterName": "weight"
+          }
+        },
+        {
+          "name": "MODHIS",
           "comment": "",
           "source": {
             "subsystem": "TCS",
@@ -548,7 +568,7 @@
       "units": "NoUnits",
       "channel": [
         {
-          "name": "IMG-ATM",
+          "name": "IRIS-IMAGER",
           "comment": "",
           "source": {
             "subsystem": "TCS",
@@ -558,7 +578,17 @@
           }
         },
         {
-          "name": "ATM",
+          "name": "IRIS-IFS",
+          "comment": "",
+          "source": {
+            "subsystem": "TCS",
+            "componentName": "cmIRIS",
+            "eventName": "imgAtmDispersion",
+            "parameterName": "dispersion"
+          }
+        },
+        {
+          "name": "MODHIS",
           "comment": "",
           "source": {
             "subsystem": "TCS",
