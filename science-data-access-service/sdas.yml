@@ -3,13 +3,15 @@ info:
   version: '0.9.0'
   title: Science Data Access Service REST Endpoints
   description: >-
-    The Science Data Access Service (SDAS) is an HTTP service that allows science data to be retrieved from the Science Data Storage System.
+    The Science Data Access Service (SDAS) is an HTTP service that 
+    provides methods to search for science and ancillary data and 
+    retrieve them from the Science Data Storage System.
 
-    Visit [TMT Website](http://www.tmt.org) for more information.
+    Visit [TIO Website](http://www.tmt.org) for more information.
 
     Complete codebase is available on [Github](https://github.com/tmtsoftware/dms).
 
-    Collection of routes listed on this page are http end points exposed by TMT common software.
+    Collection of routes listed on this page are HTTP endpoints exposed by TIO Common Software.
   x-logo:
     url: tmt.png
   license:
@@ -27,8 +29,8 @@ paths:
       parameters:
       - name: URIs
         in: query
-        description: string identifier of file in format tmt:&lt;archiveName>/&lt;filename>
-        example: "tmt:hq/20230323_001928.fits,  tmt:useltp/20230324_005623.fits"
+        description: string identifier of file in format tio:&lt;archiveName>/&lt;filename>
+        example: "tio:hq/20230323_001928.fits,  tio:useltp/20230324_005623.fits"
         required: true
         style: form
         explode: false
@@ -82,7 +84,7 @@ paths:
             application/json:
               schema: 
                 type: string
-                example: tmt:hq/20230323_001928.fits
+                example: tio:hq/20230323_001928.fits
         '400':
           description:
             "Bad Request. Arguments provided were not correct or were incomplete: with explanatory text provided."

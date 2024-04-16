@@ -106,7 +106,7 @@ components:
     fileId:
       in: path
       name: fileId
-      description: A unique indentifier for a previously stored engineering ancillary file.
+      description: A unique identifier for a previously stored engineering ancillary file.
       required: true
       schema:
         type: string

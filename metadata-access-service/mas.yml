@@ -5,11 +5,11 @@ info:
   description: >-
     The Metadata Access Service (MAS) is an HTTP service that allows clients (applications and users) to fetch metadata for an ExposureId in a variety of formats such as FITS header and JSON. It also supports a request for specific header information using one or more FITS keywords.
           
-    Visit [TMT Website](http://www.tmt.org) for more information.
+    Visit [TIO Website](http://www.tmt.org) for more information.
 
     Complete codebase is available on [Github](https://github.com/tmtsoftware/dms).
 
-    Collection of routes listed on this page are http end points exposed by TMT common software.
+    Collection of routes listed on this page are HTTP endpoints exposed by TIO Common Software.
   x-logo:
     url: tmt.png
   license:

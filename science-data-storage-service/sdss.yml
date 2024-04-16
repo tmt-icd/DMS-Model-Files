@@ -5,11 +5,11 @@ info:
   description: >-
     The Science Data Storage Service (SDSS) is an HTTP service that allows science data to be added to the Science Data Storage System.
 
-    Visit [TMT Website](http://www.tmt.org) for more information.
+    Visit [TIO Website](http://www.tmt.org) for more information.
 
     Complete codebase is available on [Github](https://github.com/tmtsoftware/dms).
 
-    Collection of routes listed on this page are http end points exposed by TMT common software.
+    Collection of routes listed on this page are HTTP endpoints exposed by TIO Common Software.
   x-logo:
     url: tmt.png
   license:
@@ -42,7 +42,7 @@ paths:
             application/json:
               schema: 
                 type: string
-                example: tmt:hq/20341223_0128394.fits
+                example: tio:hq/20341223_0128394.fits
         '401':
           description:
             "Bad Request. The caller is not authorized for this operation."
@@ -86,7 +86,7 @@ paths:
               schema:
                 $ref: "../shared.yml#/components/schemas/AncillaryFileProgramResponse"
               example:
-                uri: tmt:hq/2039B-042_top-end-temps-20450412.fits
+                uri: tio:hq/2039B-042_top-end-temps-20450412.fits
                 timestamp: 2045-04-12T23:20:50.52Z
                 programId: 2039B-042
                 fileName: 2039B-042_top-end-temps-20450412.fits
@@ -134,7 +134,7 @@ paths:
               schema:
                 $ref: "../shared.yml#/components/schemas/AncillaryFileObservationResponse"
               example:
-                uri: tmt:hq/2039B-042-123_top-end-temps-20450412.fits
+                uri: tio:hq/2039B-042-123_top-end-temps-20450412.fits
                 timestamp: 2045-04-12T23:20:50.52Z
                 observationId: 2039B-042-123
                 fileName: 2039B-042-123_top-end-temps-20450412.fits
@@ -182,7 +182,7 @@ paths:
               schema:
                 $ref: "../shared.yml#/components/schemas/AncillaryFileExposureResponse"
               example:
-                uri: tmt:hq/2039B-042-123-IRIS-IMG-SCI1-1234_top-end-temps-20450412.fits
+                uri: tio:hq/2039B-042-123-IRIS-IMG-SCI1-1234_top-end-temps-20450412.fits
                 timestamp: 2045-04-12T23:20:50.52Z
                 exposureId: 2039B-042-123-IRIS-IMG-SCI1-1234
                 fileName: 2039B-042-123-IRIS-IMG-SCI1-1234_top-end-temps-20450412.fits
