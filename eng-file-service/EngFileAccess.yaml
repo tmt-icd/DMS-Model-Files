@@ -8,7 +8,7 @@ info:
     <p>
     The complete DMS codebase is available on [Github](https://github.com/tmtsoftware/dms).
     <p>
-    The collection of routes listed on this page are HTTP endpoints exposed by TMT Common Software.
+    The collection of routes listed on this page are HTTP endpoints exposed by TIO Common Software.
   license:
     name: Apache 2.0
     url: https://www.apache.org/licenses/LICENSE-2.0.html
@@ -157,7 +157,7 @@ paths:
         required: true
         style: form
         explode: false
-        example: [tmt:hq/topEndTemps-2025-04-12T23:20:50.52Z, tmt:hq/topEndTemps-2025-04-13T23:20:00.32Z]
+        example: [tio:hq/topEndTemps-2025-04-12T23:20:50.52Z, tio:hq/topEndTemps-2025-04-13T23:20:00.32Z]
         schema:
           type: array
           minItems: 1

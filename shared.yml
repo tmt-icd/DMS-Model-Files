@@ -293,7 +293,7 @@ components:
         uri:
           type: string
           format: uri
-          example: tmt:hq/2039B-042_weatherMap-20391012.fits
+          example: tio:hq/2039B-042_weatherMap-20391012.fits
         timestamp:
           type: string
           format: date-time
@@ -314,7 +314,7 @@ components:
         uri:
           type: string
           format: uri
-          example: tmt:hq/2039B-042-123_weatherMap-20391012.fits
+          example: tio:hq/2039B-042-123_weatherMap-20391012.fits
         timestamp:
           type: string
           format: date-time
@@ -335,7 +335,7 @@ components:
         uri:
           type: string
           format: uri
-          example: tmt:hq/2039B-042-123-IRIS-IMG-SCI1-1234_weatherMap-20391012.fits
+          example: tio:hq/2039B-042-123-IRIS-IMG-SCI1-1234_weatherMap-20391012.fits
         timestamp:
           type: string
           format: date-time

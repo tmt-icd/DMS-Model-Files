@@ -11,7 +11,7 @@ info:
     <p>
     The complete DMS codebase is available on [Github](https://github.com/tmtsoftware/dms).
     <p>
-    The collection of routes listed on this page are HTTP endpoints exposed by TMT Common Software.
+    The collection of routes listed on this page are HTTP endpoints exposed by TIO Common Software.
   license:
     name: Apache 2.0
     url: https://www.apache.org/licenses/LICENSE-2.0.html

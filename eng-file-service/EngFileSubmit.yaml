@@ -8,7 +8,7 @@ info:
     <p>
     Complete codebase is available on [Github](https://github.com/tmtsoftware/dms).
     <p>
-    The collection of routes listed on this page are HTTP end points exposed by TMT Common Software.
+    The collection of routes listed on this page are HTTP end points exposed by TIO Common Software.
   license:
     name: Apache 2.0
     url: https://www.apache.org/licenses/LICENSE-2.0.html
@@ -53,7 +53,7 @@ paths:
               schema: 
                 $ref: '../eng-shared/eng-shared.yaml#/components/schemas/FileItem'
               example:
-                uri: tmt:tmt/top-end-temps-20450412:20:50:52
+                uri: tio:tio/top-end-temps-20450412:20:50:52
                 timestamp: 2045-04-12T23:20:50.52Z
                 subsystem: ESEN
                 channel: top-end-temps
