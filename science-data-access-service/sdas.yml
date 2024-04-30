@@ -50,7 +50,7 @@ paths:
         schema:
           $ref: '../shared.yml#/components/schemas/PackageType'
       responses:
-        '201':
+        '200':
           description: OK
           content:
             application/octet-stream:
@@ -78,10 +78,10 @@ paths:
         schema: 
           $ref: '../shared.yml#/components/schemas/ExposureId'
       responses:
-        '201':
+        '200':
           description: URI of file if successfully found
           content:
-            application/json:
+            text/plain:
               schema: 
                 type: string
                 example: tio:hq/20230323_001928.fits
@@ -120,7 +120,7 @@ paths:
         - $ref: '../shared.yml#/components/parameters/outputFormat'
         
       responses: 
-        '201':
+        '200':
           description: Information about of matching files.  Media type depends on `outputType parameter`
           content:
             application/json:
@@ -156,7 +156,7 @@ paths:
         - $ref: "../shared.yml#/components/parameters/programId"
 
       responses:
-        '201':
+        '200':
           description: A list of information about matching files, including download URI.
           content:
             application/json:
@@ -180,7 +180,7 @@ paths:
         - $ref: "../shared.yml#/components/parameters/observationId"
 
       responses:
-        '201':
+        '200':
           description: A list of information about matching files, including download URI.
           content:
             application/json:
@@ -201,7 +201,7 @@ paths:
         - $ref: "../shared.yml#/components/parameters/exposureId"
 
       responses:
-        '201':
+        '200':
           description: A list of information about matching files, including download URI.
           content:
             application/json:
