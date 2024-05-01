@@ -206,6 +206,7 @@ paths:
       parameters:
         - name: night
           in: path
+          required: true
           description: "This is an UTC date to associate the file to in YYYYMMDD."
           example: 20250412
           schema:
@@ -242,7 +243,7 @@ paths:
         '500':
           description:
             "Bad Request. Arguments provided were not correct or were incomplete: with explanatory text."
-  '/newfilepath/':
+  '/newfilepath':
     get:
       description: "Obtain path to write a new image on the Summit Storage.  This endpoint is used by the Detector Data 
       Collection Service to copy a file from the transfer location to a long-term storage space.  This endpoint
