@@ -34,10 +34,10 @@ paths:
           schema:
             $ref: '../shared.yml#/components/schemas/Subsystem'
       responses: 
-        '201':
+        '200':
           description: path of transfer area
           content:
-            application/json:
+            text/plain:
               schema: 
                 type: string
                 example: /data/transfer/iris/
@@ -61,7 +61,7 @@ paths:
         '201':
           description: path of transfer area
           content:
-            application/json:
+            text/plain:
               schema:
                 type: string
                 example: /data/transfer/iris/
