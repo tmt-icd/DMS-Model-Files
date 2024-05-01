@@ -68,6 +68,7 @@ paths:
             format: date-time
         - name: fileType
           in: query
+          required: true
           description: "Type of file (e.g. weather map, PSFR data)"
           example: "weather map"
           schema:
@@ -114,10 +115,11 @@ paths:
           schema:
             type: string
             format: date-time
-        - name: fileType
+        - name: topic
           in: query
+          required: true
           description: "Type of file (e.g. weather map, PSFR data)"
-          example: "weather map"
+          example: "WeatherMap"
           schema:
             type: string
       requestBody:
@@ -162,10 +164,11 @@ paths:
           schema:
             type: string
             format: date-time
-        - name: fileType
+        - name: topic
           in: query
+          required: true
           description: "Type of file (e.g. weather map, PSFR data)"
-          example: "weather map"
+          example: "WeatherMap"
           schema:
             type: string
       requestBody:
@@ -186,6 +189,52 @@ paths:
                 timestamp: 2045-04-12T23:20:50.52Z
                 exposureId: 2039B-042-123-IRIS-IMG-SCI1-1234
                 fileName: 2039B-042-123-IRIS-IMG-SCI1-1234_top-end-temps-20450412.fits
+                fileId: "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+        '401':
+          description:
+            "Bad Request. The caller is not authorized for this operation."
+        '500':
+          description:
+            "Bad Request. Arguments provided were not correct or were incomplete: with explanatory text."
+  '/ancillary/night/{night}':
+    post:
+      tags:
+        - Science Data Storage Service
+      description: "Add one ancillary file associated with a night to the Science Archive"
+      summary: Add science ancillary file to night
+      operationId: addScienceAncillaryFileNight
+      parameters:
+        - name: night
+          in: path
+          description: "This is an UTC date to associate the file to in YYYYMMDD."
+          example: 20250412
+          schema:
+            type: string
+        - name: topic
+          in: query
+          required: true
+          description: "Type of file (e.g. weather map, PSFR data)"
+          example: "WeatherMap"
+          schema:
+            type: string
+      requestBody:
+        description: file to be uploaded
+        required: true
+        content:
+          application/octet-stream:
+            schema: {}
+      responses:
+        '201':
+          description: The submitted file is successfully added. A description of the added file including its fileId is returned as JSON.
+          content:
+            application/json:
+              schema:
+                $ref: "../shared.yml#/components/schemas/AncillaryFileProgramResponse"
+              example:
+                uri: tio:hq/2039B-042_top-end-temps-20450412.fits
+                timestamp: 2045-04-12T23:20:50.52Z
+                programId: 2039B-042
+                fileName: 2039B-042_top-end-temps-20450412.fits
                 fileId: "3fa85f64-5717-4562-b3fc-2c963f66afa6"
         '401':
           description:
