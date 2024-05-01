@@ -36,23 +36,26 @@ components:
       description: filename of file when submitted to DMS
       schema:
         type: string
-    programId: #sdas
+    programId: #sdas, sdss
       name: programId
-      in: query
+      in: path
+      required: true
       description: String identifier for the program, in format &lt;YYYY>&lt;S>-&lt;XXX>, where &lt;YYYY> is the semester year, &lt;S> is the semester (either A or B), and &lt;XXX> is the three digit program number
       example: 2039B-042
       schema:
         type: string
-    observationId: #sdas
+    observationId: #sdas, sdss
       name: observationId
-      in: query
+      in: path
+      required: true
       description: String identifier for an observation, in format &lt;YYYY>&lt;S>-&lt;XXX>-&lt;NNN>, where &lt;YYYY> is the semester year, &lt;S> is the semester (either A or B), &lt;XXX> is the three digit program number, and &lt;NNN> is the three digit observation number
       example: 2039B-042-123
       schema:
         type: string
-    exposureId: #sdas
+    exposureId: #sdas, sdss
       name: exposureId
-      in: query
+      in: path
+      required: true
       description: String identifier for an exposure, in format &lt;OBSID>-&lt;INST>-&lt;CHAN>-&lt;TYP#>-&lt;NNNN>, where &lt;OBSID> is the observation ID, &lt;INST> is the instrument identifier, &lt;CHAN> is the channel identifier, &lt;TYP#> is the image type identifier followed by the calibration level number, and &lt;NNNN> is the four digit exposure number.
       example: 2022A-123-044-IRIS-IMG-DRK1-0023
       schema:
