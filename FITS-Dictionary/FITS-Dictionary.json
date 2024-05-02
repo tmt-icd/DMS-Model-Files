@@ -14,7 +14,7 @@
       "units": "NoUnits",
       "source": {
         "subsystem": "ESW",
-        "componentName": "master_sequencer",
+        "componentName": "TopLevelSequencer",
         "eventName": "ObservationDetails",
         "parameterName": "observationStartDateTime"
       }
@@ -26,7 +26,7 @@
       "units": "NoUnits",
       "source": {
         "subsystem": "ESW",
-        "componentName": "master_sequencer",
+        "componentName": "TopLevelSequencer",
         "eventName": "object",
         "parameterName": "name"
       }
@@ -38,7 +38,7 @@
       "units": "NoUnits",
       "source": {
         "subsystem": "ESW",
-        "componentName": "master_sequencer",
+        "componentName": "TopLevelSequencer",
         "eventName": "ObservationDetails",
         "parameterName": "observer"
       }
@@ -1548,7 +1548,7 @@
       "units": "NoUnits",
       "source": {
         "subsystem": "ESW",
-        "componentName": "master_sequencer",
+        "componentName": "TopLevelSequencer",
         "eventName": "ObservationDetails",
         "parameterName": "observationId"
       }
