@@ -72,7 +72,7 @@ paths:
           $ref: '../shared.yml#/components/schemas/ObserveEvent'
       - name: event
         in: query
-        description: Event including prefix.  If this is used, only the data for the specificed Event is returned.
+        description: Event including prefix.  If this is used, only the data for the specified Event is returned.
         schema: 
           $ref: '../shared.yml#/components/schemas/EventKey'
       responses:
@@ -81,7 +81,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '../shared.yml#/components/schemas/EngData'
+                $ref: '../eng-shared/eng-shared.yaml#/components/schemas/EngData'
         '400':
           description:
             "Bad Request. Arguments provided were not correct or were incomplete: with explanatory text provided."
