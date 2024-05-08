@@ -3,13 +3,14 @@ info:
   version: '0.9.0'
   title: Science Data Storage Service REST Endpoints
   description: >-
-    The Science Data Storage Service (SDSS) is an HTTP service that allows science data to be added to the Science Data Storage System.
+    The Science Data Storage Service is an HTTP service that allows science data to be added 
+    to the Science Data Storage System.  There are two Data Storage Services, 
+    the Summit Data Storage Service (SDSS) with inserts items into the Summit Storage, 
+    and the HQ Data Storage Service (HQDSS), which inserts items into the TIO Archive.
 
     Visit [TIO Website](http://www.tmt.org) for more information.
 
     Complete codebase is available on [Github](https://github.com/tmtsoftware/dms).
-
-    Collection of routes listed on this page are HTTP endpoints exposed by TIO Common Software.
   x-logo:
     url: tmt.png
   license:
@@ -57,20 +58,12 @@ paths:
       summary: Add science ancillary file to program
       operationId: addScienceAncillaryFileProgram
       parameters:
-        - $ref: "../shared.yml#/components/parameters/programId"
-        - name: userTime
-          in: query
-          description: "This is an optional time that can be provided to associate to specific time or date within a program. Times
-            follow ISO-8601 format - yyyy-MM-ddTHH:mm:ssZ. Z is Zulu=UTC."
-          example: 2025-04-12T23:20:50.52Z
-          schema:
-            type: string
-            format: date-time
-        - name: fileType
+        - $ref: "../shared.yml#/components/parameters/programIdPath"
+        - name: topic
           in: query
           required: true
           description: "Type of file (e.g. weather map, PSFR data)"
-          example: "weather map"
+          example: "WeatherMap"
           schema:
             type: string
       requestBody:
@@ -106,15 +99,7 @@ paths:
       summary: Add science ancillary file to observation
       operationId: addScienceAncillaryFileObservation
       parameters:
-        - $ref: "../shared.yml#/components/parameters/observationId"
-        - name: userTime
-          in: query
-          description: "This is an optional time that can be provided to associate to specific time or date within an observation. Times
-            follow ISO-8601 format - yyyy-MM-ddTHH:mm:ssZ. Z is Zulu=UTC."
-          example: 2025-04-12T23:20:50.52Z
-          schema:
-            type: string
-            format: date-time
+        - $ref: "../shared.yml#/components/parameters/observationIdPath"
         - name: topic
           in: query
           required: true
@@ -156,14 +141,6 @@ paths:
       operationId: addScienceAncillaryFileExposure
       parameters:
         - $ref: "../shared.yml#/components/parameters/exposureId"
-        - name: userTime
-          in: query
-          description: "This is an optional time that can be provided to associate to specific time or date within an exposure. Times
-            follow ISO-8601 format - yyyy-MM-ddTHH:mm:ssZ. Z is Zulu=UTC."
-          example: 2025-04-12T23:20:50.52Z
-          schema:
-            type: string
-            format: date-time
         - name: topic
           in: query
           required: true
@@ -243,25 +220,42 @@ paths:
         '500':
           description:
             "Bad Request. Arguments provided were not correct or were incomplete: with explanatory text."
-  '/newfilepath':
+  '/prepareNewFile':
     get:
-      description: "Obtain path to write a new image on the Summit Storage.  This endpoint is used by the Detector Data 
-      Collection Service to copy a file from the transfer location to a long-term storage space.  This endpoint
-      is only available at the Summit."
-      summary: Get new file path
+      description: "Prepare Summit system for a new image to be written to the Summit Storage.  When this endpoint 
+      is called, The Summit Data Storage Service assigns an internal filename and constructs a URI for the file, and
+      creates a new entry in the Dataset Information Database with this mapping.   
+      
+      The internal filename is in the format UTCDATE-XXXXX where UTCDATE  is the current UTC date in YYYYMMDD 
+      format, and XXXXX is a running number managed by SDSS, reset to 0 at the start of each UTC day.
+      
+      This endpoint is also used by the Detector Data Collection Service to obtain a path to copy a file from 
+      the transfer location to a long-term storage space.  This endpoint is only available at the Summit.
+      
+      These operations are also performed for other endpoints in the service.  This endpoint is intended for use 
+      solely by the DDCS when it copies files to the storage directly."
+      summary: Prepare storage for a new file
       tags:
         - Science Data Storage Service
-      operationId: get new file path
+      operationId: prepare for new file
       responses:
         '200':
-          description: "path of where to write the file.  The filename is in the format UTCDATE-XXXXX where UTCDATE
-          is the current UTC date in YYYYMMDD format, and XXXXX is a running number managed by SDSS, reset to 0 at the 
-          start of each UTC day."
+          description: "A JSON structure with the path of the file in Summit Storage and the URI file handle."
           content:
-            text/plain:
+            application/json:
               schema:
-                type: string
-                example: /data/science/20450314_28342.fits
+                type: object
+                properties:
+                  path:
+                    type: string
+                    description: ""
+                  uri:
+                    type: string
+                    format: uri
+                    description: "Handle for file used to download file"
+              example:
+                path: /data/science/20450314_28342.fits
+                uri: tio:summit/20450314_28342.fits
         '400':
           description:
             "Bad Request. Arguments provided were not correct or were incomplete: with explanatory text provided."
