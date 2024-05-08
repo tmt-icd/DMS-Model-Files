@@ -16,7 +16,16 @@ components:
       name: startTime
       in: query
       required: false
-      description: All queries include a time range. startTime is the oldest time in RFC 3339 format.
+      description: Only return data that have a timestamp after or equal to this startTime, specified in RFC 3339 format
+      schema:
+        type: string
+        format: date-time
+        example: 2025-04-12T23:20:50.52Z
+    startTimeReq: # fas  cds, sdas
+      name: startTime
+      in: query
+      required: true
+      description: Only return data that have a timestamp after or equal to this startTime, specified in RFC 3339 format
       schema:
         type: string
         format: date-time
@@ -25,7 +34,7 @@ components:
       name: endTime
       in: query
       required: false
-      description: All queries include a time range. endTime is the most recent time in RFC 3339 format.
+      description: Only return data that have a timestamp before or equal to this endTIme, specified in RFC 3339 format.
       schema:
         type: string
         format: date-time
@@ -36,7 +45,7 @@ components:
       description: filename of file when submitted to DMS
       schema:
         type: string
-    programId: #sdas, sdss
+    programIdPath: #sdas, sdss
       name: programId
       in: path
       required: true
@@ -44,10 +53,26 @@ components:
       example: 2039B-042
       schema:
         type: string
-    observationId: #sdas, sdss
+    observationIdPath: #sdas, sdss
       name: observationId
       in: path
       required: true
+      description: String identifier for an observation, in format &lt;YYYY>&lt;S>-&lt;XXX>-&lt;NNN>, where &lt;YYYY> is the semester year, &lt;S> is the semester (either A or B), &lt;XXX> is the three digit program number, and &lt;NNN> is the three digit observation number
+      example: 2039B-042-123
+      schema:
+        type: string
+    programId: #sdas, sdss
+      name: programId
+      in: query
+      required: false
+      description: String identifier for the program, in format &lt;YYYY>&lt;S>-&lt;XXX>, where &lt;YYYY> is the semester year, &lt;S> is the semester (either A or B), and &lt;XXX> is the three digit program number
+      example: 2039B-042
+      schema:
+        type: string
+    observationId: #sdas, sdss
+      name: observationId
+      in: query
+      required: false
       description: String identifier for an observation, in format &lt;YYYY>&lt;S>-&lt;XXX>-&lt;NNN>, where &lt;YYYY> is the semester year, &lt;S> is the semester (either A or B), &lt;XXX> is the three digit program number, and &lt;NNN> is the three digit observation number
       example: 2039B-042-123
       schema:
@@ -58,13 +83,6 @@ components:
       required: true
       description: String identifier for an exposure, in format &lt;OBSID>-&lt;INST>-&lt;CHAN>-&lt;TYP#>-&lt;NNNN>, where &lt;OBSID> is the observation ID, &lt;INST> is the instrument identifier, &lt;CHAN> is the channel identifier, &lt;TYP#> is the image type identifier followed by the calibration level number, and &lt;NNNN> is the four digit exposure number.
       example: 2022A-123-044-IRIS-IMG-DRK1-0023
-      schema:
-        type: string
-    obsId: #sdas
-      name: obsId
-      in: query
-      description: String identifier for the observation, in format &lt;ProgramID>-&lt;XXX>, where &lt;ProgramID> is the Program ID (e.g. 2039B-042) and XXX is the observation number
-      example: 2039B-042-567
       schema:
         type: string
     observer: #sdas
@@ -153,7 +171,14 @@ components:
     calibrationType: #cds
       name: calType
       in: query
-      description: type of calibration file to locate.  `fileType` must be "calibration" to use this parameter
+      description: type of calibration file to locate.
+      schema:
+        $ref: '#/components/schemas/CalibrationFileType'
+    calibrationTypeReq: #cds
+      name: calType
+      in: query
+      description: type of calibration file to locate.
+      required: true
       schema:
         $ref: '#/components/schemas/CalibrationFileType'
     fileType:  #sdas
@@ -211,11 +236,11 @@ components:
     CalibrationFileType:
       description: Type of calibration file
       type: string
-      enum: [flat, bias, dark, wavelengthSolution]
+      enum: [ARC, IDP, DRK, MDK, FFD, NFF, BAI, TEL, FLX, SKY, CAL]
     FileType:
       description: Type of file
       type: string
-      enum: [science, calibration, processed, ancillary]
+      enum: [science, calibration, ancillary]
     OutputFormat:
       description: Format of results
       type: string
@@ -243,53 +268,7 @@ components:
       required:
       - name
       - value
-    Parameter:
-      description: Event parameter
-      type: string
-      properties:
-        name:
-          type: string
-          description: name of parameter
-        index:
-          type: integer
-          minimum: 0
-    ParameterValue:
-      type: object
-      properties:
-        name:
-          type: string
-        datatype:
-           $ref: '#/components/schemas/EventType'
-        values: 
-          type: array
-          items:
-            $ref: '#/components/schemas/ItemValue'
-    ItemValue:
-      type: object
-      properties:
-        value:
-          { }
-        timestamp:
-          type: string
-    EventData:
-      description: returned engineering event data
-      type: object
-      properties:
-        EventName: 
-          type: string
-        Parameters:
-          type: array
-          items:
-            $ref: '#/components/schemas/ParameterValue'
-    EngData: #mas
-      allOf: 
-      - $ref: '#/components/schemas/DataResponse'
-      - type: object
-        properties:
-          eventData:
-            type: array
-            items:
-              $ref: '#/components/schemas/EventData'
+
     AncillaryFileProgramResponse:
       type: object
       properties:
