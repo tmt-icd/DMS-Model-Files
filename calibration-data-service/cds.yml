@@ -8,8 +8,6 @@ info:
     Visit [TIO Website](https://www.tmt.org) for more information.
 
     Complete codebase is available on [Github](https://github.com/tmtsoftware/dms).
-
-    The collection of routes listed on this page are HTTP endpoints exposed by TIO Common Software.
   x-logo:
     url: tmt.png
   license:
@@ -59,12 +57,12 @@ paths:
         - Calibration Data Service
       operationId: locate calibration for exposure
       parameters:
-        - $ref: '../shared.yml#/components/parameters/calibrationType'
         - name: exposureId
           in: query
           required: true
           schema:
             $ref: '../shared.yml#/components/schemas/ExposureId'
+        - $ref: '../shared.yml#/components/parameters/calibrationTypeReq'
       responses:
         '200':
           description: Exposure ID of matching file
