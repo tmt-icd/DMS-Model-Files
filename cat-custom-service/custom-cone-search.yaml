@@ -1,11 +1,12 @@
 openapi: 3.0.3
 info:
   title: IVOA Cone Search
-  description: |-
-    This specification defines a simple query protocol for retrieving records from a catalog of astronomical sources. 
-    The query describes sky position and an angular distance, defining a cone on the sky. 
+  description:
+    This specification defines a simple query protocol for retrieving records from a catalog of astronomical sources.
+    The query describes sky position and an angular distance, defining a cone on the sky.
     <p>
     The response returns a list of astronomical sources from the catalog whose positions lie within the cone, formatted as a VOTable.
+
   version: 1.0.3
   contact:
     email: dal@ivoa.net
@@ -19,30 +20,51 @@ servers:
 paths:
   /:
     get:
+      summary: Submit a Cone-Search query on the catalog database.
       tags:
-        - Basic Search
+        - ConeSearch
       parameters:
         - name: RA
           in: query
+          example: 100.587
+          required: true
           description:
             A right-ascension in the ICRS coordinate system for the position of the center of the cone to search, given in decimal degrees.
           schema:
             type: number
-            example: 100.587
+            format: float
         - name: DEC
           in: query
+          example: -30.45
+          required: true
           description:
             A declination in the ICRS coordinate system for the position of the center of the cone to search, given in decimal degrees.
           schema:
             type: number
-            example: -30.45
+            format: float
         - name: SR
           in: query
+          example: 0.0125
+          required: true
           description:
             The radius of the cone to search, given in decimal degrees.
           schema:
             type: number
-            example: 0.0125
+            format: float
+        - name: VERB
+          in: query
+          example: 2
+          required: false
+          schema:
+            type: integer
+            format: int32
+        - name: MAXREC
+          in: query
+          example: 2001
+          required: false
+          schema:
+            type: integer
+            format: int32
       responses:
         '200':
           description: successful operation
