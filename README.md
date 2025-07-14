@@ -1,2 +1,2 @@
 # DMS-Model-Files
- Data Management System ICD model files
+ Data Management System ICD model files.
